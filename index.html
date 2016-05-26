@@ -1,8 +1,45 @@
 <head>
-    <link rel="stylesheet" href="bower_components/jointjs/dist/joint.css" />
+    <link rel="stylesheet" href="css/ui.css" />    
 </head>
 <body>
-    <div id="paper"></div>
+    <div class="header">
+        
+    </div>
+    <div class="view">
+        <div id="schematicView">            
+            <div class="sidebar">
+                <div class="circuitListWrapper">
+                    <ul id="circuitList">
+                        <li>
+                            <img src="./imgs/D.png"/>
+                            <span>D flip flop</span>
+                        </li>
+
+                        <li>
+                            <img src="./imgs/D.png"/>
+                            <span>D flip flop</span>
+                        </li>
+
+                        <li>
+                            <img src="./imgs/D.png"/>
+                            <span>D flip flop</span>
+                        </li>
+
+                        <li>
+                            <img src="./imgs/D.png"/>
+                            <span>D flip flop</span>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <div id="schamaricPaper"></div>
+        </div>
+        <div id="fsmView">
+            <div id="fsmPaper"></div>            
+        </div>
+    </div>
+    <link rel="stylesheet" href="bower_components/jointjs/dist/joint.css" />
     <script src="js/gate.js"></script>
     <script src="js/algorithm/forward.js"></script>
     <script src="js/algorithm/reverse.js"></script>    

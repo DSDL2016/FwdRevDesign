@@ -1,0 +1,69 @@
+* {
+    margin: 0px;
+}
+
+
+body {
+    width: 100%;
+    height: 100%;
+}
+
+.header {
+    width: 100%;
+    height: 50px;
+    background-color: #26b14f;
+}
+
+.view {
+    width: 100%;
+    height: cal(100% - 50px);
+}
+
+#schematicView {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.sidebar {
+    width: 30%;
+    max-width: 250px;
+}
+
+
+#schamaricPaper {
+    flex: auto;
+}
+
+.circuitListWrapper {
+    height: 100%;
+}
+
+#circuitList {
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hiden;
+    padding: 10px;
+}
+
+#circuitList li:hover{
+    background-color: #c2f2b7;
+}
+
+#circuitList li{
+    display: inline-block;
+    padding: 5px;
+    list-style-type: none;
+    width: 100%;
+}
+
+#circuitList li img{
+    display: inline-block;
+    vertical-align: middle;    
+}
+
+#circuitList li span{
+    display: inline-block;
+    vertical-align: middle;
+}
+
