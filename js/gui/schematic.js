@@ -87,10 +87,17 @@ GUI.schematic._initPaper = function(paperView){
 };
 
 GUI.schematic.insertGate = function(x, y, gateName){
+    let inPorts = [], outPorts = [];
+    for( let i = 0; i < Gate[gateName].nIn; ++i ){
+        inPorts.push("i" + i);
+    }
+    for( let i = 0; i < Gate[gateName].nIn; ++i ){
+        outPorts.push("o" + i);
+    }
     var cell = new joint.shapes.gate.Gate({
         position: { x: x, y: y },
-        inPorts: ['in'],
-        outPorts: ['out'],
+        inPorts: inPorts,
+        outPorts: outPorts,
         attrs: {
             image: { 'xlink:href': Gate[gateName].img }
         }

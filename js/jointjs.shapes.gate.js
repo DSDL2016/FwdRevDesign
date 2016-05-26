@@ -31,8 +31,8 @@ joint.shapes.gate.Gate = joint.shapes.basic.Generic.extend(_.extend({}, joint.sh
                 'pointer-events': 'none'
             },
             '.label': { text: '', 'ref-x': .5, 'ref-y': 10, ref: '.body', 'text-anchor': 'middle', fill: '#000000' },
-            '.inPorts .port-label': { x:-15, dy: 4, 'text-anchor': 'end', fill: '#000000' },
-            '.outPorts .port-label':{ x: 15, dy: 4, fill: '#000000' },
+            '.inPorts .port-label': { x:-15, dy: 4, 'text-anchor': 'end', fill: '#FFFFFF' },
+            '.outPorts .port-label':{ x: 15, dy: 4, fill: '#FFFFFF' },
             '.inPorts .port-body': { fill: 'White' },
             '.outPorts .port-body': { fill: 'White' }
         }
