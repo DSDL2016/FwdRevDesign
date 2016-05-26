@@ -1,0 +1,24 @@
+{
+  "name": "FwdRevDesign",
+  "authors": [
+    "DSDL"
+  ],
+  "description": "DSDL project",
+  "main": "index.html",
+  "keywords": [
+    "ntu",
+    "csie",
+    "DSDL",
+    "project"
+  ],
+  "license": "GPL",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
