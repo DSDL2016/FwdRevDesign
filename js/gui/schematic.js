@@ -25,6 +25,8 @@ GUI.schematic._initGateListView = function(gateListView){
 };
 
 GUI.schematic._initPaper = function(paperView){
+    this.selected = undefined;
+    
     this.graph = new joint.dia.Graph();
     
     this.paper = new joint.dia.Paper({
@@ -33,11 +35,6 @@ GUI.schematic._initPaper = function(paperView){
         height: 2048,
         gridSize: 1,
         model: this.graph,
-        linkView: joint.dia.LinkView.extend({
-            pointerclick: function(evt, x, y) {
-                
-            }
-        }),
         interactive: function(cellView) {
             if (cellView.model instanceof joint.dia.Link) {
                 // Disable the default vertex add functionality on pointerdown.
@@ -50,25 +47,25 @@ GUI.schematic._initPaper = function(paperView){
     // disable contexmenu
     this.paper.$el.on('contextmenu', function(evt) { 
         evt.preventDefault();  
-        var cellView = paper.findView(evt.target);
+        var cellView = GUI.schematic.paper.findView(evt.target);
         if (cellView) {
             console.log(cellView.model.id);  // So now you have access to both the cell view and its model.
             // ... display custom context menu, ...
+            console.log(cellView);
         }
-    });
-
-    this.paper.on('cell:pointerdblclick', function(cellView, evt) {
-        console.log("cellview:", cellView);
-        let cell = graph.getCell(cellView.model.attributes.id);
-        if( cell.isLink() ){
-            cell.label(0, {attrs: { text: { text: 'rested!!' } }} );
-        }
-        
     });
 
     this.paper.on('cell:pointerclick', function(cellView, evt) {
-        if( cellView.model.attributes.type == 'fsa.State'){
-            cellView.highlight();
+        if( cellView.model.attributes.type == 'gate.Gate'){
+            let gate = GUI.schematic.graph.getCell(cellView.model.id);
+            if( cellView.model.id !== GUI.schematic.selected ){
+                gate.attr('image/filter', { name: 'dropShadow', args: {dx: 4, dy: 4, blur: 5, color: '#26b14f'} });
+                GUI.schematic.selected = cellView.model.id;
+            }
+            else {
+                gate.removeAttr('image/filter');
+                GUI.schematic.selected = undefined;                
+            }
         }
         console.log("click!!", evt, cellView);
     });
