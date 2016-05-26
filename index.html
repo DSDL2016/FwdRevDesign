@@ -8,32 +8,12 @@
     <div class="view">
         <div id="schematicView">            
             <div class="sidebar">
-                <div class="circuitListWrapper">
-                    <ul id="circuitList">
-                        <li>
-                            <img src="./imgs/D.png"/>
-                            <span>D flip flop</span>
-                        </li>
-
-                        <li>
-                            <img src="./imgs/D.png"/>
-                            <span>D flip flop</span>
-                        </li>
-
-                        <li>
-                            <img src="./imgs/D.png"/>
-                            <span>D flip flop</span>
-                        </li>
-
-                        <li>
-                            <img src="./imgs/D.png"/>
-                            <span>D flip flop</span>
-                        </li>
-
+                <div class="gateListWrapper">
+                    <ul id="gateList">
                     </ul>
                 </div>
             </div>
-            <div id="schamaricPaper"></div>
+            <div id="schematicPaper"></div>
         </div>
         <div id="fsmView">
             <div id="fsmPaper"></div>            
@@ -48,4 +28,8 @@
     <script src="bower_components/backbone/backbone.js"></script>
     <script src="bower_components/jointjs/dist/joint.js"></script>    
     <script src="bower_components/jointjs/plugins/joint.shapes.fsa.js"></script>
+    <script src="js/jointjs.shapes.gate.js"></script>    
+    <script src="js/gui/schematic.js"></script>    
+    <script src="js/gui/init.js"></script>    
+    
 </body>

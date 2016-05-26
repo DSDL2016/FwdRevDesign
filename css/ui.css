@@ -35,34 +35,34 @@ body {
     flex: auto;
 }
 
-.circuitListWrapper {
+.gateListWrapper {
     height: 100%;
 }
 
-#circuitList {
+#gateList {
     height: 100%;
     overflow-y: scroll;
     overflow-x: hiden;
     padding: 10px;
 }
 
-#circuitList li:hover{
+#gateList li:hover{
     background-color: #c2f2b7;
 }
 
-#circuitList li{
+#gateList li{
     display: inline-block;
     padding: 5px;
     list-style-type: none;
     width: 100%;
 }
 
-#circuitList li img{
+#gateList li img{
     display: inline-block;
     vertical-align: middle;    
 }
 
-#circuitList li span{
+#gateList li span{
     display: inline-block;
     vertical-align: middle;
 }
