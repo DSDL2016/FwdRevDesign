@@ -10,7 +10,7 @@ joint.shapes.gate.Gate = joint.shapes.basic.Generic.extend(_.extend({}, joint.sh
 
     defaults: joint.util.deepSupplement({
 
-        type: 'devs.Model',
+        type: 'gate.Gate',
         size: { width: 100, height: 100 },
 
         inPorts: [],
