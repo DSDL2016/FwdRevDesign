@@ -61,6 +61,7 @@ joint.shapes.gate.Gate = joint.shapes.basic.Generic.extend(_.extend({}, joint.sh
 joint.shapes.gate.Link = joint.dia.Link.extend({
 
     defaults: {
+        router: { name: 'manhattan' },
         type: 'gate.Link',
         attrs: { '.connection' : { 'stroke-width' :  2 }}
     }
