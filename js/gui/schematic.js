@@ -76,6 +76,14 @@ GUI.schematic._initPaper = function(paperView){
         console.log("click!!", evt, cellView);
     });
 
+    $(Document).keypress(function(evt){
+        if( evt.key === 'Delete'){
+            if( GUI.schematic.selected ){
+                GUI.schematic.graph.getCell(GUI.schematic.selected).remove();
+                GUI.schematic.graph.selected = undefined;
+            }
+        }
+    });
 };
 
 GUI.schematic.insertGate = function(x, y, gateName){
