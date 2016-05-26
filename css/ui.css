@@ -6,6 +6,7 @@
 body {
     width: 100%;
     height: 100%;
+    overflow-y: hidden;
 }
 
 .header {
@@ -16,7 +17,7 @@ body {
 
 .view {
     width: 100%;
-    height: cal(100% - 50px);
+    height: calc(100% - 50px);
 }
 
 #schematicView {
@@ -28,12 +29,15 @@ body {
 
 .sidebar {
     width: 30%;
+    height: 100%
     max-width: 250px;
 }
 
 
 #schematicPaper {
     flex: auto;
+    overflow: scroll;
+    height: 100%;
 }
 
 .gateListWrapper {
@@ -43,8 +47,9 @@ body {
 #gateList {
     height: 100%;
     overflow-y: scroll;
-    overflow-x: hiden;
-    padding: 10px;
+    overflow-x: hidden;
+    margin: 10px;
+    padding: 0px;
 }
 
 #gateList li:hover{
@@ -53,7 +58,7 @@ body {
 
 #gateList li{
     display: inline-block;
-    padding: 5px;
+    margin: 5px;
     list-style-type: none;
     width: 100%;
 }

@@ -29,8 +29,8 @@ GUI.schematic._initPaper = function(paperView){
     
     this.paper = new joint.dia.Paper({
         el: paperView,
-        width: paperView.width(),
-        height: paperView.height(),
+        width: 2048,
+        height: 2048,
         gridSize: 1,
         model: this.graph,
         linkView: joint.dia.LinkView.extend({
