@@ -56,10 +56,15 @@ GUI.schematic._initPaper = function(paperView){
         }
     });
 
+    // register click to highlight (select)
     this.paper.on('cell:pointerclick', function(cellView, evt) {
         if( cellView.model.attributes.type == 'gate.Gate'){
             let gate = GUI.schematic.graph.getCell(cellView.model.id);
             if( cellView.model.id !== GUI.schematic.selected ){
+                if( GUI.schematic.selected ){
+                    GUI.schematic.graph.getCell(GUI.schematic.selected).removeAttr('image/filter');
+                    GUI.schematic.selected = undefined;                
+                }
                 gate.attr('image/filter', { name: 'dropShadow', args: {dx: 4, dy: 4, blur: 5, color: '#26b14f'} });
                 GUI.schematic.selected = cellView.model.id;
             }
