@@ -27,6 +27,20 @@ body {
     display: flex;
 }
 
+#schematicPaper button{
+    position: fixed;
+    bottom: 50px;
+    right: 49px;
+    height: 60px;
+    width: 60px;
+    border-radius: 30px;
+    border: medium none;
+    color: white;
+    font-size: 25px;
+    font-weight: 900;
+    text-align: center;
+    background-color: rgb(38, 177, 79);
+}
 
 #gateList {
     margin: 10px;
