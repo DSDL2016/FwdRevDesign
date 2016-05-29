@@ -2,7 +2,8 @@ GUI.view = GUI.view || {};
 
 GUI.view.init = function(){
     this.currentView = 'schematicView';
-    $('#transform').click(GUI.view.toggleView);
+    $('#toFSM').click(GUI.view.toggleView);
+    $('#toSchematic').click(GUI.view.toggleView);
 };
 
 
