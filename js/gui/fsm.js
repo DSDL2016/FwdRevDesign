@@ -43,6 +43,7 @@ GUI.fsm._initPaper = function(paperView){
             if( GUI.fsm.selected ){
                 if( GUI.fsm.selected !== cellView.model.id ){
                     GUI.fsm.newLink(GUI.fsm.selected, cellView.model.id);
+                    GUI.fsm.graph.getCell(GUI.fsm.selected).removeAttr('circle/filter');
                     GUI.fsm.selected = undefined;
                 }
                 else {
@@ -78,6 +79,13 @@ GUI.fsm.newState = function(x, y){
 
 
 GUI.fsm.newLink = function(id1, id2){
+    var link = new joint.shapes.fsm.Arrow({
+        source: { id: id1 },
+        target: { id: id2 },
+        labels: [{ position: 0.5, attrs: { text: { text: '', 'font-weight': 'bold' } } }]
+    });
+    GUI.fsm.graph.addCell(link);
+
 };
 
 
