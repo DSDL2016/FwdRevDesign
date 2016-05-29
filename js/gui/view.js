@@ -16,9 +16,11 @@ GUI.view.toggleView = function(){
     // Toggle current view   
     if(GUI.view.currentView === 'schematicView'){
         GUI.view.currentView = 'fsmView';
+        $('#subTitle').text('Forward Engineering');
     }
     else{
         GUI.view.currentView = 'schematicView';
+        $('#subTitle').text('Reverse Engineering');
     }
 
     // Show current view
