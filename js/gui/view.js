@@ -7,8 +7,27 @@ GUI.view.init = function(){
     $('#toFSM').click(GUI.view.toggleView);
     $('#toSchematic').click(GUI.view.toggleView);
     $('#newState').click(GUI.view.newState);
+    this._initGateListView();
 };
 
+GUI.view._initGateListView = function(){
+    
+    for(let gateName in Gate){
+        let gate = Gate[gateName];
+        let li = $('<li></li>');
+        li.append($('<img/>').attr('src', gate.img));
+        li.append($('<span>' + gate.name + '</span>'));
+
+        // dirty closure...
+        (function(gateName){
+            li.click(function(){
+                GUI.schematic.insertGate(30, 30, gateName);
+            });
+        })(gateName);
+        
+        $('#gateList').append(li);
+    }
+};    
 
 GUI.view.toggleView = function(){
 

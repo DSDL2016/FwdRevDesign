@@ -67,7 +67,7 @@ GUI.fsm._initPaper = function(paperView){
     });
     
     
-    $(Document).keypress(function(evt){
+    $(document).keypress(function(evt){
         if( evt.key === 'Delete'){
             if( GUI.fsm.selected ){
                 GUI.fsm.graph.getCell(GUI.fsm.selected).remove();

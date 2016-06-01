@@ -1,27 +1,8 @@
 var GUI = GUI || {};
 GUI.schematic = GUI.schematic || {};
 
-GUI.schematic.init = function(gateListView, paperView){
+GUI.schematic.init = function(paperView){
     this._initPaper(paperView);
-    this._initGateListView(gateListView);
-};
-
-GUI.schematic._initGateListView = function(gateListView){
-    for(let gateName in Gate){
-        let gate = Gate[gateName];
-        let li = $('<li></li>');
-        li.append($('<img/>').attr('src', gate.img));
-        li.append($('<span>' + gate.name + '</span>'));
-
-        // dirty closure...
-        (function(gateName){
-            li.click(function(){
-                GUI.schematic.insertGate(30, 30, gateName);
-            });
-        })(gateName);
-        
-        gateListView.append(li);
-    }
 };
 
 GUI.schematic._initPaper = function(paperView){
@@ -76,7 +57,7 @@ GUI.schematic._initPaper = function(paperView){
         console.log("click!!", evt, cellView);
     });
 
-    $(Document).keypress(function(evt){
+    $(document).keypress(function(evt){
         if( evt.key === 'Delete'){
             if( GUI.schematic.selected ){
                 GUI.schematic.graph.getCell(GUI.schematic.selected).remove();
