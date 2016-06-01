@@ -8,26 +8,57 @@ GUI.view.init = function(){
     $('#toSchematic').click(GUI.view.toggleView);
     $('#newState').click(GUI.view.newState);
     this._initGateListView();
+    this._bindSchematicDrop();
 };
 
 GUI.view._initGateListView = function(){
+    GUI.view.dragging = {};
     
     for(let gateName in Gate){
         let gate = Gate[gateName];
         let li = $('<li></li>');
-        li.append($('<img/>').attr('src', gate.img));
-        li.append($('<span>' + gate.name + '</span>'));
+        let img = $('<img/>').attr('src', gate.img);
+        
+        img.mousedown(function(e){
+            var offset = $(this).offset();
+            GUI.view.dragging.offsetX = e.pageX - offset.left;
+            GUI.view.dragging.offsetY = e.pageY - offset.top;
+        });
 
         // dirty closure...
         (function(gateName){
+            img.bind('drag', function(e){
+                e.preventDefault();
+                GUI.view.dragging.gateName = gateName;
+            });
+
             li.click(function(){
                 GUI.schematic.insertGate(30, 30, gateName);
             });
         })(gateName);
+
+        li.append(img);
+        li.append($('<span>' + gate.name + '</span>'));
+
         
         $('#gateList').append(li);
     }
-};    
+};
+
+GUI.view._bindSchematicDrop = function(){
+    $('#schematicPaper').bind('dragover', function(evt){
+        evt.preventDefault();
+    });
+    $('#schematicPaper').children().filter('svg').bind('drop', function(evt){
+        evt.preventDefault();
+        if( GUI.view.dragging.gateName ){
+            let x = evt.originalEvent.layerX - GUI.view.dragging.offsetX;
+            let y = evt.originalEvent.layerY - GUI.view.dragging.offsetY;
+            GUI.schematic.insertGate(x, y, GUI.view.dragging.gateName);
+            GUI.view.dragging.gateName = undefined;
+        }
+    });
+};
 
 GUI.view.toggleView = function(){
 
@@ -64,3 +95,4 @@ GUI.view.showSetLinkWindow = function(id){
         });
     })(id);
 };
+
