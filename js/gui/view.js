@@ -38,7 +38,7 @@ GUI.view.newState = function(){
 GUI.view.showSetLinkWindow = function(id){
     $("#stateLinkLabelWindow").show();
     (function(id){
-        $('#enterSetLabel').click(function(){
+        $('#enterSetLabel').one('click',function(){
             GUI.fsm.setLinkLabel(id, $('#stateLinkLabel').val() );
             GUI.fsm.removeLinkVertex(id);
             $('#stateLinkLabelWindow').hide();
