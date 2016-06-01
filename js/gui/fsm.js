@@ -15,13 +15,13 @@ GUI.fsm._initPaper = function(paperView){
         height: 2048,
         gridSize: 1,
         model: this.graph,
-        interactive: function(cellView) {
-            if (cellView.model instanceof joint.dia.Link) {
-                // Disable the default vertex add functionality on pointerdown.
-                return { vertexAdd: false };
-            }
-            return true;
-        }
+        // interactive: function(cellView) {
+        //     if (cellView.model instanceof joint.dia.Link) {
+        //         // Disable the default vertex add functionality on pointerdown.
+        //         return { vertexAdd: false };
+        //     }
+        //     return true;
+        // }
     });
     
     // disable contexmenu
@@ -41,7 +41,8 @@ GUI.fsm._initPaper = function(paperView){
             let state = GUI.fsm.graph.getCell(cellView.model.id);
             if( GUI.fsm.selected ){
                 if( GUI.fsm.selected !== cellView.model.id ){
-                    GUI.fsm.newLink(GUI.fsm.selected, cellView.model.id);
+                    let linkId = GUI.fsm.newLink(GUI.fsm.selected, cellView.model.id);
+                    GUI.view.showSetLinkWindow(linkId);
                     GUI.fsm.graph.getCell(GUI.fsm.selected).removeAttr('circle/filter');
                     GUI.fsm.selected = undefined;
                 }
@@ -58,6 +59,14 @@ GUI.fsm._initPaper = function(paperView){
         console.log("click!!", evt, cellView);
     });
 
+    // double click to set link lebel
+    this.paper.on('cell:pointerdblclick', function(cellView, evt){
+        if( cellView.model.attributes.type == 'fsm.Arrow'){
+            GUI.view.showSetLinkWindow(cellView.model.id);
+        }
+    });
+    
+    
     $(Document).keypress(function(evt){
         if( evt.key === 'Delete'){
             if( GUI.fsm.selected ){
@@ -74,16 +83,31 @@ GUI.fsm.newState = function(x, y){
         position: { x: x, y: y }
     });
     this.graph.addCell(cell);
+    return cell.id;
 };
 
 
 GUI.fsm.newLink = function(id1, id2, label){
+    label =  label || "";
     var link = new joint.shapes.fsm.Arrow({
         source: { id: id1 },
         target: { id: id2 },
         labels: [{ position: 0.5, attrs: { text: { text: label, 'font-weight': 'bold' } } }]
     });
     GUI.fsm.graph.addCell(link);
+    return link.id;
+};
+
+GUI.fsm.setLinkLabel = function(id, label){
+    GUI.fsm.graph.getCell(id).label(0, { attrs: {text: {text: label} }});
 };
 
 
+GUI.fsm.removeLinkVertex = function(id){
+    let link = GUI.fsm.graph.getCell(id);
+    let linkView = link.findView(GUI.fsm.paper);
+    if(link.attributes.vertices){
+        let lastVertexId = link.attributes.vertices.length - 1;    
+        linkView.removeVertex(lastVertexId);
+    }
+};
