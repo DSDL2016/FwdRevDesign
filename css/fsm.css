@@ -1,6 +1,7 @@
 
 #fsmView {
     height: 100%;
+    position: relative;
 }
 
 .fsm {
@@ -39,3 +40,48 @@
     right: 130px;
     background-color: rgb(38, 167, 177);
 }
+
+
+.popUpWrapper{
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    background-color: rgba(0,0,0,0.2);
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    align-items: center;    
+}
+
+.popUpWrapper > div {
+    width: 200px;
+    display: flex;
+    background-color: white;
+    border-radius: 10px;
+    margin: auto;
+    flex-direction: column;
+    padding: 20px;
+}
+
+
+.popUpWrapper > div > .content {
+    display: block;
+}
+
+.popUpWrapper > div > .content > input{
+    width: 40px;
+    border-width: 0px 0px 2px 0px;
+    border-color: black;
+    text-align: center;
+    color: blue;    
+}
+
+
+.popUpWrapper div .buttons {
+    width: 100%;
+    display: block;
+    text-align: right;
+    padding-top: 20px;    
+}
+

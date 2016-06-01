@@ -1,3 +1,10 @@
+button {
+    border: none;
+    color: white;
+    width: 80px;
+    height: 40px;
+}
+
 * {
     margin: 0px;
 }
@@ -36,3 +43,10 @@ body {
 }
 
 
+button.cancel {
+    background-color: rgb(177, 38, 102);
+}
+
+button.enter {
+    background-color: rgb(38, 167, 177);
+}

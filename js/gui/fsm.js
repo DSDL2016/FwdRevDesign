@@ -15,7 +15,6 @@ GUI.fsm._initPaper = function(paperView){
         height: 2048,
         gridSize: 1,
         model: this.graph,
-        defaultLink: new joint.shapes.gate.Link({}),
         interactive: function(cellView) {
             if (cellView.model instanceof joint.dia.Link) {
                 // Disable the default vertex add functionality on pointerdown.
@@ -78,14 +77,13 @@ GUI.fsm.newState = function(x, y){
 };
 
 
-GUI.fsm.newLink = function(id1, id2){
+GUI.fsm.newLink = function(id1, id2, label){
     var link = new joint.shapes.fsm.Arrow({
         source: { id: id1 },
         target: { id: id2 },
-        labels: [{ position: 0.5, attrs: { text: { text: '', 'font-weight': 'bold' } } }]
+        labels: [{ position: 0.5, attrs: { text: { text: label, 'font-weight': 'bold' } } }]
     });
     GUI.fsm.graph.addCell(link);
-
 };
 
 
