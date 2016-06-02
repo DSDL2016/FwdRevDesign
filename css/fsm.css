@@ -26,12 +26,14 @@
     font-size: 25px;
     font-weight: 900;
     text-align: center;
+    z-index: 30;
 }
 
 #toSchematic{
     bottom: 50px;
     right: 50px;
     background-color: rgb(38, 177, 79);
+    z-index: 30;
 }
 
 

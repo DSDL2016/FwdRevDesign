@@ -23,6 +23,7 @@
     font-weight: 900;
     text-align: center;
     background-color: rgb(38, 177, 79);
+    z-index: 30;
 }
 
 #schematicPaper {
