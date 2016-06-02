@@ -72,7 +72,7 @@ GUI.schematic.insertGate = function(x, y, gateName){
     for( let i = 0; i < Gate[gateName].nIn; ++i ){
         inPorts.push("i" + i);
     }
-    for( let i = 0; i < Gate[gateName].nIn; ++i ){
+    for( let i = 0; i < Gate[gateName].nOut; ++i ){
         outPorts.push("o" + i);
     }
     var cell = new joint.shapes.gate.Gate({
