@@ -31,11 +31,39 @@ function generateOutputTruthTable(fsm) {
   return arr;
 }
 
+function truthTable2Schematic(truthTable) {
+  // output and AND gate
+  schematic = [{type: 'output'}];
+  schematic.push({type: 'and', out:[[{id: 0, port: 0}]]});
+
+  // create all input pin
+  for (var i = 0; i <= totalBit; i++) {
+    schematic.push({type: 'input ' + i, out: [[{id: schematic.length + 1, port: 0}]]});
+    schematic.push({type: 'not', out: [[]]});
+  }
+
+  // traverse each sum of sum-of-pruducts
+  for (var i = 0; i < truthTable.length; i++) {
+    schematic.push({type: 'or', out: [[{id: 1, port: i}]]});
+    var orGateIndex = schematic.length - 1;
+    for (var j = 0; j < truthTable[i].length; j++) {
+      var inputPort = schematic.find(function(x) { return x.type == ("input " + j)});
+      var index = schematic.indexOf(inputPort);
+      if (1 == truthTable[i][j])
+        schematic[index].out[0].push({id: orGateIndex, port: j});
+      else
+        schematic[index + 1].out[0].push({id: orGateIndex, port: j});
+    }
+  }
+  return schematic;
+}
+
 let fsm = {
   '10': [{next: '00', out: '0'}, {next: '10', out: '0'}],
   '00': [{next: '00', out: '0'}, {next: '01', out: '0'}],
   '01': [{next: '00', out: '1'}, {next: '10', out: '1'}]
 };
+
 document.write("states are " + Object.keys(fsm) + " <br>");
 var totalBit = Object.keys(fsm)[0].length;
 // document.write(`${totalBit} <br>`);
@@ -48,35 +76,12 @@ document.write("Simplify with Quine-McCluskey Algorithm (not implemented yet)<br
 
 document.write(truthTable + "<br>");
 
-var schematic = [];
-schematic.push({type: 'output'});
-schematic.push({type: 'and', out:[[{id: 0, port: 0}]]});
+var schematic = truthTable2Schematic(truthTable);
 
-for (var i = 0; i < truthTable.length; i++) {
-  schematic.push({type: 'or', out: [[{id: 1, port: i}]]});
-  var orGateIndex = schematic.length - 1;
-  for (var j = 0; j < truthTable[i].length; j++) {
-    var inputPort = schematic.find(function(x) { return x.type == ("input " + j)});
-    if (typeof inputPort === "undefined") {
-      schematic.push({
-        type: 'input ' + j, 
-        out: [[{id: orGateIndex, port: j}]]
-      });
-    } else {
-      var index = schematic.indexOf(inputPort);
-      schematic[index].out[0].push({id: orGateIndex, port: j});
-    }
-  }
-}
-
-for (var each in schematic) {
-  document.write(JSON.stringify(schematic[each]));
-  document.write("<br>");
-}
-
+// print the result
+for (var each in schematic) 
+  document.write(JSON.stringify(schematic[each]) + "<br>");
 </script>
-
 <body>
-
 </body>
 </html>
