@@ -17,14 +17,18 @@ function generateStateTruthTable(fsm, totalBit) {
 }
 
 function generateOutputTruthTable(fsm) {
+  var arr = [];
   document.write("Y = ");
   for (var state in fsm) {
     for (var input = 0; input <= 1; input++) {
-      if (fsm[state][input].out == '1')
+      if (fsm[state][input].out == '1') {
         document.write(state + input + ' ');
+        arr.push(state + input);
+      }
     }
   }
   document.write("<br>");
+  return arr;
 }
 
 let fsm = {
@@ -38,9 +42,37 @@ var totalBit = Object.keys(fsm)[0].length;
 document.write(totalBit + " (total bit)<br>");
 
 generateStateTruthTable(fsm, totalBit);
-generateOutputTruthTable(fsm);
+var truthTable = generateOutputTruthTable(fsm);
 
 document.write("Simplify with Quine-McCluskey Algorithm (not implemented yet)<br>");
+
+document.write(truthTable + "<br>");
+
+var schematic = [];
+schematic.push({type: 'output'});
+schematic.push({type: 'and', out:[[{id: 0, port: 0}]]});
+
+for (var i = 0; i < truthTable.length; i++) {
+  schematic.push({type: 'or', out: [[{id: 1, port: i}]]});
+  var orGateIndex = schematic.length - 1;
+  for (var j = 0; j < truthTable[i].length; j++) {
+    var inputPort = schematic.find(function(x) { return x.type == ("input " + j)});
+    if (typeof inputPort === "undefined") {
+      schematic.push({
+        type: 'input ' + j, 
+        out: [[{id: orGateIndex, port: j}]]
+      });
+    } else {
+      var index = schematic.indexOf(inputPort);
+      schematic[index].out[0].push({id: orGateIndex, port: j});
+    }
+  }
+}
+
+for (var each in schematic) {
+  document.write(JSON.stringify(schematic[each]));
+  document.write("<br>");
+}
 
 </script>
 
