@@ -39,6 +39,14 @@ const Gate = {
         name: 'NOR Gate',
         truthTable: [ [[1, 0], [0, 0]] ] // nor.truthTable[0][a][b] == not(a or b)
     },
+    xor: {
+        nIn: 2,  // number of input pin
+        nOut: 1, // number of output pin
+        img: 'imgs/xor.png', // background image
+        type: 'cmb',        // 'cmb' => combinational, 'seq' => sequential
+        name: 'XOR Gate',
+        truthTable: [ [[0, 1], [1, 0]] ] // xor.truthTable[0][a][b] == ((not a) and b) or (a and (not b))
+    },
     sr: {
         nIn: 2,
         nOut: 2,
