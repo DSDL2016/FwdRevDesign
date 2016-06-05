@@ -5,7 +5,15 @@ const Gate = {
         img: 'imgs/or.png', // background image
         type: 'cmb',        // 'cmb' => combinational, 'seq' => sequential
         name: 'OR Gate',
-        truthTable: [[ [0, 1], [1, 1]]] // or.truthTable[0][a][b] == a or b
+        truthTable: [ [[0, 1], [1, 1]] ] // or.truthTable[0][a][b] == a or b
+    },
+    and: {
+        nIn: 2,  // number of input pin
+        nOut: 1, // number of output pin
+        img: 'imgs/and.png', // background image
+        type: 'cmb',        // 'cmb' => combinational, 'seq' => sequential
+        name: 'AND Gate',
+        truthTable: [ [[0, 0], [0, 1]] ] // and.truthTable[0][a][b] == a and b
     },
     sr: {
         nIn: 2,
