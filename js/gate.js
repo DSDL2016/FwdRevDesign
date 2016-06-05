@@ -31,6 +31,14 @@ const Gate = {
         name: 'NAND Gate',
         truthTable: [ [[1, 1], [1, 0]] ] // nand.truthTable[0][a][b] == not(a and b)
     },
+    nor: {
+        nIn: 2,  // number of input pin
+        nOut: 1, // number of output pin
+        img: 'imgs/nor.png', // background image
+        type: 'cmb',        // 'cmb' => combinational, 'seq' => sequential
+        name: 'NOR Gate',
+        truthTable: [ [[1, 0], [0, 0]] ] // nor.truthTable[0][a][b] == not(a or b)
+    },
     sr: {
         nIn: 2,
         nOut: 2,
