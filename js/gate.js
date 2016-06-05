@@ -15,6 +15,14 @@ const Gate = {
         name: 'AND Gate',
         truthTable: [ [[0, 0], [0, 1]] ] // and.truthTable[0][a][b] == a and b
     },
+    not: {
+        nIn: 1,  // number of input pin
+        nOut: 1, // number of output pin
+        img: 'imgs/not.png', // background image
+        type: 'cmb',        // 'cmb' => combinational, 'seq' => sequential
+        name: 'NOT Gate',
+        truthTable: [ [[1, 0]] ] // not.truthTable[0][a] == not a
+    },
     sr: {
         nIn: 2,
         nOut: 2,
