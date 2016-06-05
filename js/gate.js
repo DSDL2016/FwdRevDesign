@@ -54,7 +54,7 @@ const Gate = {
         type: 'seq',
         name: 'RS Latch',
         truthTable: [
-            [ // Q (output pin 0)
+            [ // Q+ (output pin 0)
                 [ // R == 0
                     [0, 1], // S == 0
                     [1, 1]  // S == 1
@@ -64,7 +64,7 @@ const Gate = {
                     [undefined, undefined] // S == 1
                 ]
             ],            
-            [ // -Q (output pin 1)
+            [ // /Q+ (output pin 1)
                 [ // R == 0
                     [1, 0], // S == 0
                     [0, 0]  // S == 1
@@ -93,7 +93,7 @@ const Gate = {
                     [1, 0]  // K == 1
                 ]
             ],            
-            [ // -Q (output pin 1)
+            [ // /Q (output pin 1)
                 [ // J == 0
                     [1, 0], // K == 0
                     [1, 1]  // K == 1
