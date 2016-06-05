@@ -4,16 +4,18 @@
 </head>
 <script>
 function generateStateTruthTable(fsm, totalBit) {
+  var result = [];
   for (var i = 0; i < totalBit; i++) {
-    document.write(i + "= ");
+    var arr = [];
     for (var state in fsm) {
       for (var input = 0; input <= 1; input++) {
         if (fsm[state][input].next[i] == '1')
-          document.write(state + input + ' ');
+          arr.push(state + input);
       }
     }
-    document.write("<br>");
+    result.push(arr);
   }
+  return result;
 }
 
 function generateOutputTruthTable(fsm) {
@@ -31,23 +33,31 @@ function generateOutputTruthTable(fsm) {
   return arr;
 }
 
-function truthTable2Schematic(truthTable) {
+function truthTable2Schematic(truthTable, outputIndex) {
   // output and AND gate
-  schematic = [{type: 'output'}];
-  schematic.push({type: 'and', out:[[{id: 0, port: 0}]]});
+  schematic = [];
+  if (outputIndex == -1) {
+    schematic.push({type: 'output'});
+    schematic.push({type: 'and', out:[[{id: 0, port: 0}]]});
+  } else {
+    schematic.push({type: 'and', out:[[{id: 2 * outputIndex + 1, port: 0}]]});
+  }
 
   // create all input pin
-  for (var i = 0; i <= totalBit; i++) {
-    schematic.push({type: 'input ' + i, out: [[{id: schematic.length + 1, port: 0}]]});
+  for (var i = 0; i < totalBit; i++) {
+    schematic.push({type: 'dff ' + i, out: [[{id: schematic.length + 1, port: 0}]]});
     schematic.push({type: 'not', out: [[]]});
   }
 
+  schematic.push({type: 'dff ' + totalBit, out: [[{id: schematic.length + 1, port: 0}]]});
+  schematic.push({type: 'not', out: [[]]});
+
   // traverse each sum of sum-of-pruducts
   for (var i = 0; i < truthTable.length; i++) {
-    schematic.push({type: 'or', out: [[{id: 1, port: i}]]});
+    schematic.push({type: 'or', out: [[{id: (outputIndex == -1) ? 1 : 0, port: i}]]});
     var orGateIndex = schematic.length - 1;
     for (var j = 0; j < truthTable[i].length; j++) {
-      var inputPort = schematic.find(function(x) { return x.type == ("input " + j)});
+      var inputPort = schematic.find(function(x) { return x.type == ("dff " + j)});
       var index = schematic.indexOf(inputPort);
       if (1 == truthTable[i][j])
         schematic[index].out[0].push({id: orGateIndex, port: j});
@@ -69,19 +79,27 @@ var totalBit = Object.keys(fsm)[0].length;
 // document.write(`${totalBit} <br>`);
 document.write(totalBit + " (total bit)<br>");
 
-generateStateTruthTable(fsm, totalBit);
-var truthTable = generateOutputTruthTable(fsm);
+var stateTruthTables = generateStateTruthTable(fsm, totalBit);
+document.write(JSON.stringify(stateTruthTables) + "<br>");
+
+var outputTruthTable = generateOutputTruthTable(fsm);
 
 document.write("Simplify with Quine-McCluskey Algorithm (not implemented yet)<br>");
 
-document.write(truthTable + "<br>");
+document.write(outputTruthTable + "<br>");
 
-var schematic = truthTable2Schematic(truthTable);
+var schematic = truthTable2Schematic(outputTruthTable, -1);
 
 // print the result
 for (var each in schematic) 
   document.write(JSON.stringify(schematic[each]) + "<br>");
+document.write("<br>");
+
+var test = truthTable2Schematic(stateTruthTables[0], 0);
+for (var each in test) 
+  document.write(JSON.stringify(test[each]) + "<br>");
+
 </script>
 <body>
 </body>
-</html>
+</html> 
