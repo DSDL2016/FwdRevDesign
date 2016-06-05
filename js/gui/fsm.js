@@ -111,3 +111,40 @@ GUI.fsm.removeLinkVertex = function(id){
         linkView.removeVertex(lastVertexId);
     }
 };
+
+GUI.fsm.getFSM = function(){
+    let raw = GUI.fsm.graph.toJSON();
+    let idMapping = {};
+    let fsm = {};
+    let counter = 0;
+    for( let cell of raw.cells ){        
+        if( cell.type == 'fsm.State' ){
+            let id = String(counter);
+            counter += 1;
+            idMapping[cell.id] = id;
+            fsm[id] = [];
+        }
+        else if( cell.type == 'fsm.Arrow' ){
+            let source = cell.source;
+            let sourceId = idMapping[cell.source.id];
+            let nextId = idMapping[cell.target.id];
+            if( sourceId === undefined || nextId === undefined ){
+                return { error: "There is an edge whose target or source is undefined." };
+            }            
+            let input = Number(cell.labels[0].attrs.text.text[0]);
+            let output = Number(cell.labels[0].attrs.text.text[2]);
+            if( fsm[sourceId][input] !== undefined ){
+                return { error: "There is a state having two out edge with same input." };
+            }
+            if( output !== 0 && output !== 1 ){
+                return { error: "There is an edge whose output is not 0 or 1."};
+            }
+            fsm[sourceId][input] = { next: nextId, output: output };
+        }        
+        else if( cell.type == 'fsm.Start' ){
+            idMapping[cell.id] = 'start';
+        }
+    }
+    return fsm;    
+};
+
