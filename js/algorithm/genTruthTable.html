@@ -5,10 +5,10 @@
 <script>
 function generateStateTruthTable(fsm, totalBit) {
   var result = [];
-  for (var i = 0; i < totalBit; i++) {
+  for (let i = 0; i < totalBit; i++) {
     var arr = [];
-    for (var state in fsm) {
-      for (var input = 0; input <= 1; input++) {
+    for (let state in fsm) {
+      for (let input = 0; input <= 1; input++) {
         if (fsm[state][input].next[i] == '1')
           arr.push(state + input);
       }
@@ -21,8 +21,8 @@ function generateStateTruthTable(fsm, totalBit) {
 function generateOutputTruthTable(fsm) {
   var arr = [];
   document.write("Y = ");
-  for (var state in fsm) {
-    for (var input = 0; input <= 1; input++) {
+  for (let state in fsm) {
+    for (let input = 0; input <= 1; input++) {
       if (fsm[state][input].out == '1') {
         document.write(state + input + ' ');
         arr.push(state + input);
@@ -44,7 +44,7 @@ function truthTable2Schematic(truthTable, outputIndex) {
   }
 
   // create all input pin
-  for (var i = 0; i < totalBit; i++) {
+  for (let i = 0; i < totalBit; i++) {
     schematic.push({type: 'dff ' + i, out: [[{id: schematic.length + 1, port: 0}]]});
     schematic.push({type: 'not', out: [[]]});
   }
@@ -53,10 +53,10 @@ function truthTable2Schematic(truthTable, outputIndex) {
   schematic.push({type: 'not', out: [[]]});
 
   // traverse each sum of sum-of-pruducts
-  for (var i = 0; i < truthTable.length; i++) {
+  for (let i = 0; i < truthTable.length; i++) {
     schematic.push({type: 'or', out: [[{id: (outputIndex == -1) ? 1 : 0, port: i}]]});
     var orGateIndex = schematic.length - 1;
-    for (var j = 0; j < truthTable[i].length; j++) {
+    for (let j = 0; j < truthTable[i].length; j++) {
       var inputPort = schematic.find(function(x) { return x.type == ("dff " + j)});
       var index = schematic.indexOf(inputPort);
       if (1 == truthTable[i][j])
@@ -91,12 +91,12 @@ document.write(outputTruthTable + "<br>");
 var schematic = truthTable2Schematic(outputTruthTable, -1);
 
 // print the result
-for (var each in schematic) 
+for (let each in schematic) 
   document.write(JSON.stringify(schematic[each]) + "<br>");
 document.write("<br>");
 
 var test = truthTable2Schematic(stateTruthTables[0], 0);
-for (var each in test) 
+for (let each in test) 
   document.write(JSON.stringify(test[each]) + "<br>");
 
 </script>
