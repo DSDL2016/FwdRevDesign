@@ -80,7 +80,30 @@ const Gate = {
         nIn: 2,
         nOut: 2,
         name: 'JK Flip-Flop',
-        img: './imgs/JK.png'
+        img: './imgs/JK.png',
+        type: 'seq',
+        truthTable: [ // [Q+=0, /Q+=1][R][S][Q]
+            [ // Q (output pin 0)
+                [ // J == 0
+                    [0, 1], // K == 0 -> Q+ = Q
+                    [0, 0]  // K == 1
+                ], 
+                [ // J = 1
+                    [1, 1], // K == 0
+                    [1, 0]  // K == 1
+                ]
+            ],            
+            [ // -Q (output pin 1)
+                [ // J == 0
+                    [1, 0], // K == 0
+                    [1, 1]  // K == 1
+                ], 
+                [ // J = 1
+                    [0, 0], // K == 0
+                    [0, 1]  // K == 1
+                ]
+            ]
+        ]
     },
     d: {
         nIn: 1,
