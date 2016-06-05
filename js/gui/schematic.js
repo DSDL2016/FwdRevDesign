@@ -81,8 +81,45 @@ GUI.schematic.insertGate = function(x, y, gateName){
         outPorts: outPorts,
         attrs: {
             image: { 'xlink:href': Gate[gateName].img }
-        }
+        },
+        gate: gateName
     });
     this.graph.addCell(cell);
 
+};
+
+GUI.schematic.getSchematic = function(){
+    let raw = GUI.schematic.graph.toJSON();
+    let idMapping = {};
+    let schematic = [];
+    for(let cell of raw.cells){
+        if(cell.type == 'gate.Gate'){
+            idMapping[cell.id] = schematic.length;
+            let gate = {
+                type: cell.gate,
+                out: []
+            };
+            for(let i = 0; i < Gate[cell.gate].nOut; ++i){
+                gate.out[i] = [];
+            }
+            schematic.push(gate);
+        }
+            
+    }
+    for(let cell of raw.cells){
+        if(cell.type == 'gate.Link'){
+            let sourceId = idMapping[cell.source.id];
+            let sourcePort = Number(cell.source.port.replace('o', ''));
+            let targetId = idMapping[cell.target.id];
+            let targetPort = Number(cell.target.port.replace('i', ''));
+            if( sourceId === undefined || targetId === undefined ){
+                return {error: "There is a link whose target gate id or source gate id is undefined."};
+            }
+            if( sourcePort === NaN || targetPort === NaN ){
+                return {error: "There is a link whose target port number or source port number is NaN."};
+            }
+            schematic[sourceId].out[sourcePort].push({id: targetId, port: targetPort});
+        }
+    }
+    return schematic;
 };
