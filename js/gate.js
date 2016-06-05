@@ -47,12 +47,12 @@ const Gate = {
         name: 'XOR Gate',
         truthTable: [ [[0, 1], [1, 0]] ] // xor.truthTable[0][a][b] == ((not a) and b) or (a and (not b))
     },
-    sr: {
+    rs: {
         nIn: 2,
         nOut: 2,
-        img: 'imgs/SR.png',
+        img: 'imgs/RS.png',
         type: 'seq',
-        name: 'SR Latch',
+        name: 'RS Latch',
         truthTable: [
             [ // Q (output pin 0)
                 [ // R == 0
