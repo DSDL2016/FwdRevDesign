@@ -148,3 +148,37 @@ GUI.fsm.getFSM = function(){
     return fsm;    
 };
 
+
+GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
+    const defaultCenterX = 400;
+    const defaultCenterY = 300;
+    const defaultRadius = 200;
+    const defaultStartAngle = 0;
+    centerX = centerX || defaultCenterX;
+    centerY = centerY || defaultCenterY;
+    radius = radius || defaultRadius;
+    startAngle = startAngle || defaultStartAngle;
+    let nStates = Object.keys(fsm).length;
+    let dTheta = 2 * Math.PI / nStates; // delta theta
+    let idMapping = {};
+    let theta = startAngle;
+    // add states
+    for(let state in fsm){
+        let x = centerX + radius * Math.cos(theta);
+        let y = centerY + radius * Math.sin(theta);
+        let id = GUI.fsm.newState(x, y);
+        idMapping[state] = id;
+        theta += dTheta;
+    }
+    // add links
+    for(let state in fsm){
+        let sourceId = idMapping[state];
+        for(let input = 0; input < 2; input++){
+            if( fsm[state][input] ){
+                let targetId = idMapping[fsm[state][input].next];
+                let label = "" + input + '/' + fsm[state][input].output;
+                GUI.fsm.newLink(sourceId, targetId, label);
+            }
+        }
+    }
+};
