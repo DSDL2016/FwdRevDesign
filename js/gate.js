@@ -53,7 +53,7 @@ const Gate = {
         img: 'imgs/RS.png',
         type: 'seq',
         name: 'RS Latch',
-        truthTable: [
+        truthTable: [  // [Q+=0, /Q+=1][R][S][Q]
             [ // Q+ (output pin 0)
                 [ // R == 0
                     [0, 1], // S == 0
@@ -82,7 +82,7 @@ const Gate = {
         name: 'JK Flip-Flop',
         img: './imgs/JK.png',
         type: 'seq',
-        truthTable: [ // [Q+=0, /Q+=1][R][S][Q]
+        truthTable: [ // [Q+=0, /Q+=1][J][K][Q]
             [ // Q (output pin 0)
                 [ // J == 0
                     [0, 1], // K == 0 -> Q+ = Q
@@ -109,6 +109,25 @@ const Gate = {
         nIn: 1,
         nOut: 1,
         name: 'D Flip-Flop',
-        img: './imgs/D.png'
+        img: './imgs/D.png',
+        type: 'seq',
+        truthTable: [ // [Q+=0, /Q+=1][D][0][Q]
+            [ // Q (output pin 0)
+                [ // D == 0
+                    [0, 0]
+                ], 
+                [ // D = 1
+                    [1, 1]
+                ]
+            ],            
+            [ // /Q (output pin 1)
+                [ // D == 0
+                    [1, 1]
+                ], 
+                [ // D = 1
+                    [0, 0]
+                ]
+            ]
+        ]
     }
 };
