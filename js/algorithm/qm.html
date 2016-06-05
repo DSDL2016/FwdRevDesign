@@ -1,0 +1,36 @@
+<html>
+<head>
+<title></title>
+</head>
+<script src="https://github.com/LarryBattle/quine-mccluskeyjs/raw/master/qm-min.js"></script> 
+<script>
+function parseInput(raw) {
+  var cooked = [];
+  const ascii = "ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~!#$%&'(),-./0123456789:;<=>?@";
+  for (let i = 0; i < raw.length; i++) {
+    var str = "";
+    for (let j = 0; j < raw[i].length; j++)
+      str += ascii[j] + ((raw[i][j] == 0) ? "*" : "");
+    cooked.push(str);
+  }
+  var expression = "";
+  for (let i = 0; i < cooked.length; i++) 
+    expression += cooked[i] + ((i == cooked.length - 1) ? "" : "+");
+  return expression;
+}
+
+function parseOutput(res) {
+  // parse "B + A*C" to ["x1x", "0x1"]
+}
+
+var raw = ["001", "011", "111", "110", "010"];
+
+document.write(parseInput(raw) + "<br>");
+
+var inputs = [ "A", "B", "C"];
+//var expression = parseInput(raw);
+document.write(qm.simplify(inputs, parseInput(raw)));
+</script>
+<body>
+</body>
+</html> 
