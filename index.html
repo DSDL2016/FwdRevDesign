@@ -1,14 +1,71 @@
 <head>
-    <link rel="stylesheet" href="bower_components/jointjs/dist/joint.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8"> 
+    <link rel="stylesheet" href="css/ui.css" />
+    <link rel="stylesheet" href="css/schematic.css" />
+    <link rel="stylesheet" href="css/fsm.css" />
+    
 </head>
 <body>
-    <div id="paper"></div>
+    <div class="header">
+        <span>
+            <span class="title">
+                DSDL Project
+            </span>
+            <span id="subTitle">
+                Reverse Engineering
+            </span>
+        </span>
+    </div>
+    <div class="view">
+        <div id="schematicView">            
+            <div class="sidebar">
+                <div class="gateListWrapper">
+                    <ul id="gateList">
+                    </ul>
+                </div>
+            </div>
+            <div class="schematic">
+                <button id="toFSM">→</button>
+                <div id="schematicPaper">
+                    
+                </div>
+            </div>
+        </div>
+        <div id="fsmView">
+            <div class="fsm">
+                <button id="newState">+</button>
+                <button id="toSchematic">→</button>
+                <div id="fsmPaper">
+                    
+                </div>
+            </div>
+            <div class="popUpWrapper" id="stateLinkLabelWindow">
+                <div>
+                    <div class="content">
+                        <span>input/output: </span><input type="text" id="stateLinkLabel"/>
+                    </div>
+                    <div class="buttons">
+                        <button class="cancel" id="cancelSetLabel">Cancel</button> <button class="enter" id="enterSetLabel">Enter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="bower_components/jointjs/dist/joint.css" />
     <script src="js/gate.js"></script>
     <script src="js/algorithm/forward.js"></script>
     <script src="js/algorithm/reverse.js"></script>    
-    <script src="bower_components/jquery/jquery.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/lodash/lodash.js"></script>
     <script src="bower_components/backbone/backbone.js"></script>
     <script src="bower_components/jointjs/dist/joint.js"></script>    
-    <script src="bower_components/jointjs/plugins/joint.shapes.fsa.js"></script>
+    <script src="js/jointjs.shapes.gate.js"></script>
+    <script src="js/jointjs.shapes.fsm.js"></script>    
+    <script src="js/gui/schematic.js"></script>
+    <script src="js/gui/fsm.js"></script>    
+    <script src="js/gui/view.js"></script>    
+    <script src="js/gui/init.js"></script>    
+    <link rel="stylesheet" href="css/gate.css" />    
+
 </body>
