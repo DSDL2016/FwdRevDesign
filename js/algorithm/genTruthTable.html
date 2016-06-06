@@ -2,34 +2,44 @@
 <head>
 <title></title>
 </head>
+<script src="qmSimplify.js"></script> 
 <script>
-function generateStateTruthTable(fsm, totalBit) {
-  var result = [];
-  for (let i = 0; i < totalBit; i++) {
-    var arr = [];
-    for (let state in fsm) {
-      for (let input = 0; input <= 1; input++) {
-        if (fsm[state][input].next[i] == '1')
-          arr.push(state + input);
-      }
-    }
-    result.push(arr);
-  }
-  return result;
-}
 
-function generateOutputTruthTable(fsm) {
+/**
+  * For a specfic index in the state string
+  * fsm {'10': [{next: '00', out: '0'}, {next: '10', out: '0'}],  ....}
+  * => ["101","011"]
+  */
+function index2truthTable(index, fsm) {
   var arr = [];
-  document.write("Y = ");
   for (let state in fsm) {
     for (let input = 0; input <= 1; input++) {
-      if (fsm[state][input].out == '1') {
-        document.write(state + input + ' ');
+      if (fsm[state][input].next[index] == '1')
         arr.push(state + input);
-      }
     }
   }
-  document.write("<br>");
+  return arr;
+}
+
+/**
+  * fsm {'10': [{next: '00', out: '0'}, {next: '10', out: '0'}],  ....}
+  * => [["101","011"],["001"]]
+  */
+function fsm2stateTruthTable(fsm, totalBit) {
+  var arr = [];
+  for (let i = 0; i < totalBit; i++)
+    arr.push(index2truthTable(i, fsm));
+  return arr;
+}
+
+function fsm2outputTruthTable(fsm) {
+  var arr = [];
+  for (let state in fsm) {
+    for (let input = 0; input <= 1; input++) {
+      if (fsm[state][input].out == '1')
+        arr.push(state + input);
+    }
+  }
   return arr;
 }
 
@@ -68,26 +78,36 @@ function truthTable2Schematic(truthTable, outputIndex) {
   return schematic;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 let fsm = {
   '10': [{next: '00', out: '0'}, {next: '10', out: '0'}],
   '00': [{next: '00', out: '0'}, {next: '01', out: '0'}],
   '01': [{next: '00', out: '1'}, {next: '10', out: '1'}]
 };
 
-document.write("states are " + Object.keys(fsm) + " <br>");
-var totalBit = Object.keys(fsm)[0].length;
-// document.write(`${totalBit} <br>`);
-document.write(totalBit + " (total bit)<br>");
+var totalBit = 2;
+var stateTruthTables = fsm2stateTruthTable(fsm, totalBit);
+var outputTruthTable = fsm2outputTruthTable(fsm);
 
-var stateTruthTables = generateStateTruthTable(fsm, totalBit);
-document.write(JSON.stringify(stateTruthTables) + "<br>");
+outputTruthTable = qmSimplify(outputTruthTable);
+for (let i = 0; i < stateTruthTables.length; i++)
+  stateTruthTables[i] = qmSimplify(stateTruthTables[i]);
 
-var outputTruthTable = generateOutputTruthTable(fsm);
+document.write(JSON.stringify(stateTruthTables) + "<hr>");
+document.write(JSON.stringify(outputTruthTable) + "<hr>");
 
-document.write("Simplify with Quine-McCluskey Algorithm (not implemented yet)<br>");
-
-document.write(outputTruthTable + "<br>");
-
+// TODO: refactor schematic
 var schematic = truthTable2Schematic(outputTruthTable, -1);
 
 // print the result
