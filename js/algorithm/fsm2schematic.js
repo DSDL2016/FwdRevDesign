@@ -89,15 +89,52 @@ Fsm2schematic.addOutputTruthTable = function(truthTable) {
   Fsm2schematic.addTerms(truthTable, "output");
 };
 
-// return an object containing gates only
-Fsm2schematic.getGates = function() {
-  var arr = {};
-  for (let each in Fsm2schematic) {
-    if (typeof Fsm2schematic[each] == "function")
+// return gates object only rather than functions
+Fsm2schematic.getGateObjects = function() {
+  var gates = {};
+  for (let obj in Fsm2schematic) {
+    if (typeof Fsm2schematic[obj] == "function")
       continue;
-    arr[each] = Fsm2schematic[each];
+    gates[obj] = Fsm2schematic[obj];
+  }
+  return gates;
+};
+
+/** 
+ *  return gates in format {
+ *    type: 'input',
+ *    out: [[{id: 2, port: 0}]], 
+ *    ...
+ *  }
+ */
+Fsm2schematic.getGates = function() {
+  var gates = Fsm2schematic.getGateObjects();
+  var keys = Object.keys(gates);
+  var pinNumCounter = new Array(keys.length).fill(0);
+  var arr = [];
+  for (let i in gates) {
+    gates[i]["type"] = i.split(" ")[0];
+    arr.push(Fsm2schematic.parseGate(gates[i], keys, pinNumCounter));
   }
   return arr;
+};
+
+// parse a whole gate outputs
+Fsm2schematic.parseGate = function(gate, keys, pinNumCounter) {
+  for (let j = 0; j < gate.out.length; j++)
+    gate.out[j] = Fsm2schematic.parsePins(gate.out[j], keys, pinNumCounter);
+  return gate;
+};
+
+// parse each output pin
+Fsm2schematic.parsePins = function(pins, keys, pinNumCounter) {
+  for (let i = 0; i < pins.length; i++) {
+    var index = keys.indexOf(pins[i].name);
+    delete pins[i].name;
+    pins[i]["id"] = index;
+    pins[i]["port"] = pinNumCounter[index]++;
+  }
+  return pins;
 };
 
 /**
