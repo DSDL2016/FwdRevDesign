@@ -53,8 +53,8 @@ QMAlgorithm.expression2term = function(exp, totalBit) {
   }
 
   var str = "";
-  for (let each in ans)
-    str += ans[each];
+  for (let each of ans)
+    str += each;
   return str;
 };
 
