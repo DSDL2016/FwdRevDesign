@@ -28,11 +28,6 @@ GUI.fsm._initPaper = function(paperView){
     this.paper.$el.on('contextmenu', function(evt) { 
         evt.preventDefault();  
         var cellView = GUI.fsm.paper.findView(evt.target);
-        if (cellView) {
-            console.log(cellView.model.id);  // So now you have access to both the cell view and its model.
-            // ... display custom context menu, ...
-            console.log(cellView);
-        }
     });
 
     // register click to highlight (select)
@@ -56,7 +51,6 @@ GUI.fsm._initPaper = function(paperView){
                 GUI.fsm.selected = cellView.model.id;
             }
         }
-        console.log("click!!", evt, cellView);
     });
 
     // double click to set link lebel
@@ -124,7 +118,13 @@ GUI.fsm.getFSM = function(){
             idMapping[cell.id] = id;
             fsm[id] = [];
         }
-        else if( cell.type == 'fsm.Arrow' ){
+        else if( cell.type == 'fsm.Start' ){
+            idMapping[cell.id] = 'start';
+        }
+    }
+    
+    for( let cell of raw.cells ){
+        if( cell.type == 'fsm.Arrow' ){
             let source = cell.source;
             let sourceId = idMapping[cell.source.id];
             let nextId = idMapping[cell.target.id];
@@ -141,9 +141,6 @@ GUI.fsm.getFSM = function(){
             }
             fsm[sourceId][input] = { next: nextId, output: output };
         }        
-        else if( cell.type == 'fsm.Start' ){
-            idMapping[cell.id] = 'start';
-        }
     }
     return fsm;    
 };
