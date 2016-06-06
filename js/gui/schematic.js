@@ -85,7 +85,15 @@ GUI.schematic.insertGate = function(x, y, gateName){
         gate: gateName
     });
     this.graph.addCell(cell);
+    return cell.id;
+};
 
+
+GUI.schematic.insertLink = function(from, to){
+    from.port = 'o' + from.port;
+    to.port = 'i' + to.port;
+    let link = new joint.shapes.gate.Link({ source: from, target: to});
+    GUI.schematic.graph.addCell(link);
 };
 
 GUI.schematic.getSchematic = function(){
@@ -122,4 +130,59 @@ GUI.schematic.getSchematic = function(){
         }
     }
     return schematic;
+};
+
+GUI.schematic.drawSchematic = function(schematic){
+    let inputId;
+    for( let id in schematic ){
+        if( schematic[id].type == 'input'){
+            inputId = id;
+        }
+    }
+    let idMapping = {};
+    idMapping[inputId] = GUI.schematic.insertGate( 10, 10, 'input');
+    
+    let column = [];
+    for( let next of schematic[inputId].out[0] ){
+        column.push(next.id);
+    }
+
+    const dX = 40;
+    const dY = 5;
+    const y0 = 10;
+    const x0 = 200;
+    let x = x0, y = y0;
+    let visited = new Set();
+   
+    while( column.length > 0 ){
+        let nextColumn = [];
+        for( let gateId of column ){
+            for( let out of schematic[gateId].out ){
+                for( let next in out ){
+                    if( !visited.has(next.id) ){
+                        nextColumn.push(next.id);
+                        visited.add(next.id);
+                    }
+                }
+            }
+            let id = GUI.schematic.insertGate( x, y, schematic[gateId].type);
+            idMapping[gateId] = id;
+            y += dY;
+        }
+        x += dX;
+        column = nextColumn;
+    }
+    
+    for( let gateId in schematic ){
+        let sourceId = idMapping[gateId];
+        for( let outInd in schematic[gateId].out ){
+            for( let next of schematic[gateId].out[outInd] ){
+                let targetId = idMapping[next.id];
+                GUI.schematic.insertLink(
+                    { id: sourceId, port: outInd },
+                    { id: targetId, port: next.port }
+                );
+            }
+        }
+    }
 };
