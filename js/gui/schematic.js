@@ -148,14 +148,15 @@ GUI.schematic.drawSchematic = function(schematic){
     }
 
     const dX = 40;
-    const dY = 5;
+    const dY = 105;
     const y0 = 10;
     const x0 = 200;
-    let x = x0, y = y0;
+    let x = x0;
     let visited = new Set();
    
-    while( column.length > 0 ){
+    while( column.length > 0 ){        
         let nextColumn = [];
+        let y = y0;
         for( let gateId of column ){
             for( let out of schematic[gateId].out ){
                 for( let next in out ){
