@@ -100,6 +100,23 @@ Fsm2schematic.getGateObjects = function() {
   return gates;
 };
 
+/*
+Fsm2schematic.removeEmptyGates = function(gates) {
+  for (let gate in gates)
+    if (gate != "output" && Fsm2schematic.outputIsEmpty(gates[gate].out))
+      delete gates[gate];
+  return gates;
+}
+
+Fsm2schematic.outputIsEmpty = function(outputs) {
+  for (let output of outputs)
+    if (typeof output !== 'undefined' && output.length > 0)
+      return false;
+
+  return true;
+}
+*/
+
 /** 
  *  return gates in format {
  *    type: 'input',
@@ -109,6 +126,7 @@ Fsm2schematic.getGateObjects = function() {
  */
 Fsm2schematic.getGates = function() {
   var gates = Fsm2schematic.getGateObjects();
+  // gates = Fsm2schematic.removeEmptyGates(gates);
   var keys = Object.keys(gates);
   var pinNumCounter = new Array(keys.length).fill(0);
   var arr = [];
