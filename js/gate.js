@@ -1,4 +1,10 @@
 const Gate = {
+    input: {
+        nIn: 0,
+        nOut: 1,
+        name: 'Input',
+        img: 'imgs/input.png'
+    },
     or: {
         nIn: 2,  // number of input pin
         nOut: 1, // number of output pin
