@@ -124,26 +124,42 @@ var schematic = {
 };
 
 
-const fsm = {
+/*
+ * fsm = {
+ *   "10": [{next: "10", out: "0"}, {next: "10", out: "0"}],
+ *   "00": [{next: "00", out: "0"}, {next: "01", out: "0"}],
+ *   "01": [{next: "00", out: "1"}, {next: "10", out: "1"}]
+ * };
+ * totalBit = 2;
+ *
+ * =>
+ * input = {"out":[[{"name":"not input"},{"name":"and 01"},{"name":"and 10"}]]}
+ * not input = {"out":[[]]}
+ * or 0 = {"out":[[{"name":"dff 0"}]]}
+ */ 
+function fsm2schematic(fsm, totalBit) {
+  var stateTruthTables = fsm2stateTruthTable(fsm, totalBit);
+  var outputTruthTable = fsm2outputTruthTable(fsm);
+
+  schematic.init(totalBit)
+  schematic.addStateTruthTables(stateTruthTables);
+  schematic.addOutputTruthTable(outputTruthTable);
+
+  return schematic.getGates();
+};
+
+/* for testing
+var fsm = {
   "10": [{next: "10", out: "0"}, {next: "10", out: "0"}],
   "00": [{next: "00", out: "0"}, {next: "01", out: "0"}],
   "01": [{next: "00", out: "1"}, {next: "10", out: "1"}]
 };
-const totalBit = 2;
+var totalBit = 2;
 
-var stateTruthTables = fsm2stateTruthTable(fsm, totalBit);
-var outputTruthTable = fsm2outputTruthTable(fsm);
-document.write(JSON.stringify(stateTruthTables) + "<hr>");
-document.write("Y = " + JSON.stringify(outputTruthTable) + "<hr>");
-
-schematic.init(totalBit)
-schematic.addStateTruthTables(stateTruthTables);
-schematic.addOutputTruthTable(outputTruthTable);
-
-var gates = schematic.getGates();
-for (let each in gates) 
-  document.write(each + " = " + JSON.stringify(gates[each]) + "<br>");
-document.write("<hr>");
+var ans = fsm2schematic(fsm, totalBit);
+for (let each in ans)
+  document.write(each + " = " + JSON.stringify(ans[each]) + "<br>");
+*/
 </script>
 <body>
 </body>
