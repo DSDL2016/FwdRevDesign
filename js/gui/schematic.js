@@ -117,9 +117,9 @@ GUI.schematic.getSchematic = function(){
     for(let cell of raw.cells){
         if(cell.type == 'gate.Link'){
             let sourceId = idMapping[cell.source.id];
-            let sourcePort = Number(cell.source.port.replace('o', ''));
+            let sourcePort = Number(cell.source.port.replace('i', '').replace('o', ''));
             let targetId = idMapping[cell.target.id];
-            let targetPort = Number(cell.target.port.replace('i', ''));
+            let targetPort = Number(cell.target.port.replace('i', '').replace('o', ''));
             if( sourceId === undefined || targetId === undefined ){
                 return {error: "There is a link whose target gate id or source gate id is undefined."};
             }
@@ -143,8 +143,10 @@ GUI.schematic.drawSchematic = function(schematic){
     idMapping[inputId] = GUI.schematic.insertGate( 10, 10, 'input');
     
     let column = [];
+    let visited = new Set();
     for( let next of schematic[inputId].out[0] ){
         column.push(next.id);
+        visited.add(next.id);
     }
 
     const dX = 40;
@@ -152,14 +154,13 @@ GUI.schematic.drawSchematic = function(schematic){
     const y0 = 10;
     const x0 = 200;
     let x = x0;
-    let visited = new Set();
    
     while( column.length > 0 ){        
         let nextColumn = [];
         let y = y0;
         for( let gateId of column ){
             for( let out of schematic[gateId].out ){
-                for( let next in out ){
+                for( let next of out ){
                     if( !visited.has(next.id) ){
                         nextColumn.push(next.id);
                         visited.add(next.id);
