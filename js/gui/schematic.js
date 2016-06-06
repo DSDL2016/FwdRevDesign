@@ -31,9 +31,6 @@ GUI.schematic._initPaper = function(paperView){
         evt.preventDefault();  
         var cellView = GUI.schematic.paper.findView(evt.target);
         if (cellView) {
-            console.log(cellView.model.id);  // So now you have access to both the cell view and its model.
-            // ... display custom context menu, ...
-            console.log(cellView);
         }
     });
 
@@ -54,7 +51,6 @@ GUI.schematic._initPaper = function(paperView){
                 GUI.schematic.selected = undefined;                
             }
         }
-        console.log("click!!", evt, cellView);
     });
 
     $(document).keypress(function(evt){
@@ -81,8 +77,117 @@ GUI.schematic.insertGate = function(x, y, gateName){
         outPorts: outPorts,
         attrs: {
             image: { 'xlink:href': Gate[gateName].img }
-        }
+        },
+        gate: gateName
     });
     this.graph.addCell(cell);
+    return cell.id;
+};
 
+
+GUI.schematic.insertLink = function(from, to){
+    from.port = 'o' + from.port;
+    to.port = 'i' + to.port;
+    let link = new joint.shapes.gate.Link({ source: from, target: to});
+    GUI.schematic.graph.addCell(link);
+};
+
+GUI.schematic.getSchematic = function(){
+    let raw = GUI.schematic.graph.toJSON();
+    let idMapping = {};
+    let schematic = [];
+    for(let cell of raw.cells){
+        if(cell.type == 'gate.Gate'){
+            idMapping[cell.id] = schematic.length;
+            let gate = {
+                type: cell.gate,
+                out: []
+            };
+            for(let i = 0; i < Gate[cell.gate].nOut; ++i){
+                gate.out[i] = [];
+            }
+            schematic.push(gate);
+        }
+            
+    }
+    for(let cell of raw.cells){
+        if(cell.type == 'gate.Link'){
+            if( cell.source.port.contains('i') ){
+                let tmp = cell.source;
+                cell.source = cell.target;
+                cell.target = tmp;
+            }
+            let sourceId = idMapping[cell.source.id];
+            let sourcePort = Number(cell.source.port.replace('o', ''));
+            let targetId = idMapping[cell.target.id];
+            let targetPort = Number(cell.target.port.replace('i', ''));
+            if( sourceId === undefined || targetId === undefined ){
+                return {error: "There is a link whose target gate id or source gate id is undefined."};
+            }
+            if( sourcePort === NaN || targetPort === NaN ){
+                return {error: "There is a link whose target port number or source port number is NaN."};
+            }
+            schematic[sourceId].out[sourcePort].push({id: targetId, port: targetPort});
+        }
+    }
+    return schematic;
+};
+
+GUI.schematic.drawSchematic = function(schematic){
+    let inputId;
+    for( let id in schematic ){
+        if( schematic[id].type == 'input'){
+            inputId = id;
+        }
+    }
+    let idMapping = {};
+    idMapping[inputId] = GUI.schematic.insertGate( 10, 10, 'input');
+    
+    let column = [];
+    let visited = new Set();
+    for( let next of schematic[inputId].out[0] ){
+        column.push(next.id);
+        visited.add(next.id);
+    }
+
+    const dX = 200;
+    const dXMin = 5;
+    const dY = 105;
+    const y0 = 100;
+    const x0 = 200;
+    let x = x0;
+   
+    while( column.length > 0 ){        
+        let nextColumn = [];
+        let y = y0;
+        for( let gateId of column ){
+            for( let out of schematic[gateId].out ){
+                for( let next of out ){
+                    if( !visited.has(next.id) ){
+                        nextColumn.push(next.id);
+                        visited.add(next.id);
+                    }
+                }
+            }
+            let id = GUI.schematic.insertGate( x, y, schematic[gateId].type);
+            idMapping[gateId] = id;
+            // x += dXMin;
+            y += dY;
+        }
+        x += dX;
+        column = nextColumn;
+    }
+    
+    for( let gateId in schematic ){
+        let sourceId = idMapping[gateId];
+        for( let outInd in schematic[gateId].out ){
+            for( let next of schematic[gateId].out[outInd] ){
+                let targetId = idMapping[next.id];
+                GUI.schematic.insertLink(
+                    { id: sourceId, port: outInd },
+                    { id: targetId, port: next.port }
+                );
+            }
+        }
+    }
 };
