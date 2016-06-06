@@ -31,9 +31,6 @@ GUI.schematic._initPaper = function(paperView){
         evt.preventDefault();  
         var cellView = GUI.schematic.paper.findView(evt.target);
         if (cellView) {
-            console.log(cellView.model.id);  // So now you have access to both the cell view and its model.
-            // ... display custom context menu, ...
-            console.log(cellView);
         }
     });
 
@@ -54,7 +51,6 @@ GUI.schematic._initPaper = function(paperView){
                 GUI.schematic.selected = undefined;                
             }
         }
-        console.log("click!!", evt, cellView);
     });
 
     $(document).keypress(function(evt){
@@ -116,10 +112,15 @@ GUI.schematic.getSchematic = function(){
     }
     for(let cell of raw.cells){
         if(cell.type == 'gate.Link'){
+            if( cell.source.port.contains('i') ){
+                let tmp = cell.source;
+                cell.source = cell.target;
+                cell.target = tmp;
+            }
             let sourceId = idMapping[cell.source.id];
-            let sourcePort = Number(cell.source.port.replace('i', '').replace('o', ''));
+            let sourcePort = Number(cell.source.port.replace('o', ''));
             let targetId = idMapping[cell.target.id];
-            let targetPort = Number(cell.target.port.replace('i', '').replace('o', ''));
+            let targetPort = Number(cell.target.port.replace('i', ''));
             if( sourceId === undefined || targetId === undefined ){
                 return {error: "There is a link whose target gate id or source gate id is undefined."};
             }
@@ -149,7 +150,8 @@ GUI.schematic.drawSchematic = function(schematic){
         visited.add(next.id);
     }
 
-    const dX = 160;
+    const dX = 200;
+    const dXMin = 5;
     const dY = 105;
     const y0 = 100;
     const x0 = 200;
@@ -169,6 +171,7 @@ GUI.schematic.drawSchematic = function(schematic){
             }
             let id = GUI.schematic.insertGate( x, y, schematic[gateId].type);
             idMapping[gateId] = id;
+            // x += dXMin;
             y += dY;
         }
         x += dX;
