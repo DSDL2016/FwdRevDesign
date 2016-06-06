@@ -1,8 +1,6 @@
 var Algorithm = Algorithm || {};
 
-Algorithm.forward = function(fsm){
-    // Todo here
-    let schematic;
-    return schematic;
+Algorithm.forward = function(fsm, totalBit) {
+  return Fsm2schematic.convert(fsm, totalBit);
 };
 
