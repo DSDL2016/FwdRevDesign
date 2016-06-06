@@ -149,9 +149,9 @@ GUI.schematic.drawSchematic = function(schematic){
         visited.add(next.id);
     }
 
-    const dX = 40;
+    const dX = 160;
     const dY = 105;
-    const y0 = 10;
+    const y0 = 100;
     const x0 = 200;
     let x = x0;
    
