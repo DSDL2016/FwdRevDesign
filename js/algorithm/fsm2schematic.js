@@ -1,10 +1,3 @@
-<html>
-<head>
-<title></title>
-</head>
-<script src="qmSimplify.js"></script> 
-<script>
-
 /**
   * For a specfic index in the state string
   * fsm {"10": [{next: "00", out: "0"}, {next: "10", out: "0"}],  ....}
@@ -160,7 +153,3 @@ var ans = fsm2schematic(fsm, totalBit);
 for (let each in ans)
   document.write(each + " = " + JSON.stringify(ans[each]) + "<br>");
 */
-</script>
-<body>
-</body>
-</html> 
