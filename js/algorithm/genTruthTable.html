@@ -21,7 +21,7 @@ function index2truthTable(index, fsm) {
   return arr;
 }
 
-/**
+/** For state
   * fsm {'10': [{next: '00', out: '0'}, {next: '10', out: '0'}],  ....}
   * => [["101","011"],["001"]]
   */
@@ -32,6 +32,10 @@ function fsm2stateTruthTable(fsm, totalBit) {
   return arr;
 }
 
+/** For output Y
+  * fsm {'10': [{next: '00', out: '0'}, {next: '10', out: '0'}],  ....}
+  * => ["001","011"]
+  */
 function fsm2outputTruthTable(fsm) {
   var arr = [];
   for (let state in fsm) {
@@ -43,47 +47,61 @@ function fsm2outputTruthTable(fsm) {
   return arr;
 }
 
-function truthTable2Schematic(truthTable, outputIndex) {
-  // output and AND gate
-  schematic = [];
-  if (outputIndex == -1) {
-    schematic.push({type: 'output'});
-    schematic.push({type: 'and', out:[[{id: 0, port: 0}]]});
-  } else {
-    schematic.push({type: 'and', out:[[{id: 2 * outputIndex + 1, port: 0}]]});
-  }
+function initSchematic(totalBit) {
+  var schematic = {};
+  schematic.addGate = function(gate, output) {
+    if (typeof output == "undefined")
+      schematic[gate] = {out: [[]]};
+    else
+      schematic[gate] = {out: [[{name: output}]]};
+  };
 
-  // create all input pin
+  schematic.addOutputAt = function(gate, output) {
+    schematic[gate].out[0].push({name: output});
+  };
+
+  schematic.addGate('or output', 'output');
+  schematic.addGate('output');
+  schematic.addGate('input', 'not input');
+  schematic.addGate('not input');
   for (let i = 0; i < totalBit; i++) {
-    schematic.push({type: 'dff ' + i, out: [[{id: schematic.length + 1, port: 0}]]});
-    schematic.push({type: 'not', out: [[]]});
-  }
-
-  schematic.push({type: 'dff ' + totalBit, out: [[{id: schematic.length + 1, port: 0}]]});
-  schematic.push({type: 'not', out: [[]]});
-
-  // traverse each sum of sum-of-pruducts
-  for (let i = 0; i < truthTable.length; i++) {
-    schematic.push({type: 'or', out: [[{id: (outputIndex == -1) ? 1 : 0, port: i}]]});
-    var orGateIndex = schematic.length - 1;
-    for (let j = 0; j < truthTable[i].length; j++) {
-      var inputPort = schematic.find(function(x) { return x.type == ("dff " + j)});
-      var index = schematic.indexOf(inputPort);
-      if (1 == truthTable[i][j])
-        schematic[index].out[0].push({id: orGateIndex, port: j});
-      else
-        schematic[index + 1].out[0].push({id: orGateIndex, port: j});
-    }
+    schematic.addGate('or ' + i, 'dff ' + i);
+    schematic.addGate('dff ' + i, 'not ' + i);
+    schematic.addGate('not ' + i);
   }
   return schematic;
 }
 
+// "101"-> schematic
+function addTerm(str, outputIndex, termIndex, schematic) {
+  var andGateName = 'and ' + outputIndex + termIndex;
+  schematic.addGate(andGateName,'or ' + outputIndex);
+  for (let i = 0; i < str.length -1 ; i++) {
+      if (str[i] == "x")
+        continue;
+      schematic.addOutputAt((str[i] == '1' ? 'dff ' + i: 'not ' + i), andGateName);
+  }
 
+  // handle input
+  if (str[str.length - 1] != 'x')
+    schematic.addOutputAt((str[str.length - 1] == '1' ? 'input': 'not input'), andGateName);
 
+  return schematic;
+}
 
+// ["101", "011", "1xx"] -> schematic
+function addTerms(truthTable, outputIndex, schematic) {
+  for (let i = 0; i < truthTable.length; i++)
+    schematic = addTerm(truthTable[i], outputIndex, i, schematic);
+  return schematic;
+}
 
-
-
+function stateTruthTables2schematic(truthTables, totalBit) {
+  var schematic = initSchematic(totalBit);
+  for (let i = 0; i < truthTables.length; i++)
+    schematic = addTerms(truthTables[i], i, schematic);
+  return schematic;
+}
 
 
 
@@ -99,6 +117,7 @@ let fsm = {
 var totalBit = 2;
 var stateTruthTables = fsm2stateTruthTable(fsm, totalBit);
 var outputTruthTable = fsm2outputTruthTable(fsm);
+document.write(JSON.stringify(outputTruthTable) + "<hr><hr>");
 
 outputTruthTable = qmSimplify(outputTruthTable);
 for (let i = 0; i < stateTruthTables.length; i++)
@@ -106,8 +125,13 @@ for (let i = 0; i < stateTruthTables.length; i++)
 
 document.write(JSON.stringify(stateTruthTables) + "<hr>");
 document.write(JSON.stringify(outputTruthTable) + "<hr>");
-
+var schematic = stateTruthTables2schematic(stateTruthTables, totalBit);
+for (let each in schematic) 
+  document.write(each + " = " + JSON.stringify(schematic[each]) + "<br>");
+document.write("<hr>");
+/*
 // TODO: refactor schematic
+var newSche = func(stateTruthTables);
 var schematic = truthTable2Schematic(outputTruthTable, -1);
 
 // print the result
@@ -118,7 +142,7 @@ document.write("<br>");
 var test = truthTable2Schematic(stateTruthTables[0], 0);
 for (let each in test) 
   document.write(JSON.stringify(test[each]) + "<br>");
-
+*/
 </script>
 <body>
 </body>
