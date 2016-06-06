@@ -40,10 +40,8 @@ function expression2term(exp, totalBit) {
   for (let i = 0; i < exp.length; i++) {
     if (exp[i] == "*")
       continue;
-    if (i + 1 < exp.length && exp[i + 1] == "*") // negative 
-      ans[ASCII_STRING.indexOf(exp[i])] = "0";
-    else // positive
-      ans[ASCII_STRING.indexOf(exp[i])] = "1";
+    var isNegative = (i + 1 < exp.length && exp[i + 1] == "*");
+    ans[ASCII_STRING.indexOf(exp[i])] = isNegative ? "0" : "1";
   }
 
   var str = "";
