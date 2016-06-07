@@ -174,7 +174,7 @@ Algorithm.Fsm2schematic.index2truthTable = function(index, fsm) {
 Algorithm.Fsm2schematic.fsm2stateTruthTable = function(fsm, bitLength) {
   var arr = [];
   for (let i = 0; i < bitLength; i++)
-    arr.push(QMAlgorithm.simplify(Algorithm.Fsm2schematic.index2truthTable(i, fsm)));
+    arr.push(Algorithm.simplify(Algorithm.Fsm2schematic.index2truthTable(i, fsm)));
   return arr;
 };
 
@@ -190,7 +190,7 @@ Algorithm.Fsm2schematic.fsm2outputTruthTable = function(fsm) {
         arr.push(state + input);
     }
   }
-  return QMAlgorithm.simplify(arr);
+  return Algorithm.simplify(arr);
 };
 
 Algorithm.Fsm2schematic.removeUselessOutput = function(gates) {
