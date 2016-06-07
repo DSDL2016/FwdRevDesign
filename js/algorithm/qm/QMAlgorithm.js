@@ -13,9 +13,9 @@ Algorithm.QMAlgorithm = Algorithm.QMAlgorithm || {};
 Algorithm.QMAlgorithm.ASCII_STRING ="ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwy{|}~!#$%&(),-./23456789:;<=>?@";
 
 Algorithm.simplify = function(terms) {
-  var totalBit = terms[0].length;
-  var output = Algorithm.QMAlgorithm.simplify(Algorithm.QMAlgorithm.generateInputs(totalBit), Algorithm.QMAlgorithm.parseInput(terms));
-  return Algorithm.QMAlgorithm.parseOutput(output, totalBit);
+  var bitLength = terms[0].length;
+  var output = Algorithm.QMAlgorithm.simplify(Algorithm.QMAlgorithm.generateInputs(bitLength), Algorithm.QMAlgorithm.parseInput(terms));
+  return Algorithm.QMAlgorithm.parseOutput(output, bitLength);
 };
 
 /**
@@ -45,8 +45,8 @@ Algorithm.QMAlgorithm.parseInput = function(terms) {
 /**
   * ("A*B", 3) => "01x"
   */
-Algorithm.QMAlgorithm.expression2term = function(exp, totalBit) {
-  var ans = Array(totalBit).fill("x");
+Algorithm.QMAlgorithm.expression2term = function(exp, bitLength) {
+  var ans = Array(bitLength).fill("x");
   for (let i = 0; i < exp.length; i++) {
     if (exp[i] == "*")
       continue;
@@ -63,20 +63,20 @@ Algorithm.QMAlgorithm.expression2term = function(exp, totalBit) {
 /**
   * "B + A*C" => ["x1x", "0x1"]
   */
-Algorithm.QMAlgorithm.parseOutput = function(expressionStr, totalBit) {
+Algorithm.QMAlgorithm.parseOutput = function(expressionStr, bitLength) {
   var expression = expressionStr.split(" + ");
   var arr = [];
   for (let i = 0; i < expression.length; i++)
-    arr.push(Algorithm.QMAlgorithm.expression2term(expression[i], totalBit));
+    arr.push(Algorithm.QMAlgorithm.expression2term(expression[i], bitLength));
   return arr;
 };
 
 /**
-  * return ["A", "B", "C".....(# of totalBit)]
+  * return ["A", "B", "C".....(# of bitLength)]
   */
-Algorithm.QMAlgorithm.generateInputs = function(totalBit) {
+Algorithm.QMAlgorithm.generateInputs = function(bitLength) {
   var inputs = [];
-  for (let i = 0; i < totalBit; i++)
+  for (let i = 0; i < bitLength; i++)
     inputs.push(Algorithm.QMAlgorithm.ASCII_STRING[i])
   return inputs;
 };
