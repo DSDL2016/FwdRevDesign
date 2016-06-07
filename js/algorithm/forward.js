@@ -1,10 +1,10 @@
 var Algorithm = Algorithm || {};
+Algorithm.Fsm2schematic = Algorithm.Fsm2schematic || {};
 
 Algorithm.forward = function(fsm) {
   return Algorithm.Fsm2schematic.convert(fsm);
 };
 
-Algorithm.Fsm2schematic = Algorithm.Fsm2schematic || {};
 /**
  * Algorithm.Fsm2schematic.convert() returns schematic based on the passed final state machine
  *
