@@ -1,12 +1,12 @@
 var Algorithm = Algorithm || {};
 
 Algorithm.forward = function(fsm, totalBit) {
-  return Fsm2schematic.convert(fsm, totalBit);
+  return Algorithm.Fsm2schematic.convert(fsm, totalBit);
 };
 
-var Fsm2schematic = Fsm2schematic || {};
+Algorithm.Fsm2schematic = Algorithm.Fsm2schematic || {};
 /**
- * Fsm2schematic.convert() returns schematic based on the passed final state machine
+ * Algorithm.Fsm2schematic.convert() returns schematic based on the passed final state machine
  *
  * @param {Object} fsm = {
  *     "10": [{next: "10", out: "0"}, {next: "10", out: "0"}],
@@ -22,106 +22,89 @@ var Fsm2schematic = Fsm2schematic || {};
  *   ...
  * }
  */
-Fsm2schematic.convert = function(fsm, totalBit) {
-  var stateTruthTables = Fsm2schematic.fsm2stateTruthTable(fsm, totalBit);
-  var outputTruthTable = Fsm2schematic.fsm2outputTruthTable(fsm);
+Algorithm.Fsm2schematic.convert = function(fsm, totalBit) {
+  var stateTruthTables = Algorithm.Fsm2schematic.fsm2stateTruthTable(fsm, totalBit);
+  var outputTruthTable = Algorithm.Fsm2schematic.fsm2outputTruthTable(fsm);
 
-  Fsm2schematic.init(totalBit)
-  Fsm2schematic.addStateTruthTables(stateTruthTables);
-  Fsm2schematic.addOutputTruthTable(outputTruthTable);
+  Algorithm.Fsm2schematic.init(totalBit)
+  Algorithm.Fsm2schematic.addStateTruthTables(stateTruthTables);
+  Algorithm.Fsm2schematic.addOutputTruthTable(outputTruthTable);
 
-  return Fsm2schematic.getGates();
+  return Algorithm.Fsm2schematic.getGates();
 };
 
 
-Fsm2schematic.addGate = function(gate, output) {
+Algorithm.Fsm2schematic.addGate = function(gate, output) {
   if (typeof output == "undefined")
-    Fsm2schematic[gate] = {out: [[]]};
+    Algorithm.Fsm2schematic[gate] = {out: [[]]};
   else
-    Fsm2schematic[gate] = {out: [[{name: output}]]};
+    Algorithm.Fsm2schematic[gate] = {out: [[{name: output}]]};
 };
 
-Fsm2schematic.addOutputAt = function(gate, output) {
-  Fsm2schematic[gate].out[0].push({name: output});
+Algorithm.Fsm2schematic.addOutputAt = function(gate, output) {
+  Algorithm.Fsm2schematic[gate].out[0].push({name: output});
 };
 
-Fsm2schematic.init = function(totalBit) {
-  Fsm2schematic.addGate("or output", "output");
-  Fsm2schematic.addGate("output");
-  Fsm2schematic.addGate("input", "not input");
-  Fsm2schematic.addGate("not input");
+Algorithm.Fsm2schematic.init = function(totalBit) {
+  Algorithm.Fsm2schematic.addGate("or output", "output");
+  Algorithm.Fsm2schematic.addGate("output");
+  Algorithm.Fsm2schematic.addGate("input", "not input");
+  Algorithm.Fsm2schematic.addGate("not input");
   for (let i = 0; i < totalBit; i++) {
-    Fsm2schematic.addGate("or " + i, "dff " + i);
-    Fsm2schematic.addGate("dff " + i, "not " + i);
-    Fsm2schematic.addGate("not " + i);
+    Algorithm.Fsm2schematic.addGate("or " + i, "dff " + i);
+    Algorithm.Fsm2schematic.addGate("dff " + i, "not " + i);
+    Algorithm.Fsm2schematic.addGate("not " + i);
   }
 }; 
 
 // add "101" into schematic
-Fsm2schematic.addTerm = function(term, outputIndex, termIndex) {
+Algorithm.Fsm2schematic.addTerm = function(term, outputIndex, termIndex) {
   if (outputIndex == "output") {
     var andGateName = "and output";
-    Fsm2schematic.addGate(andGateName,"or output");
+    Algorithm.Fsm2schematic.addGate(andGateName,"or output");
   } else {
     var andGateName = "and " + outputIndex + termIndex;
-    Fsm2schematic.addGate(andGateName,"or " + outputIndex);
+    Algorithm.Fsm2schematic.addGate(andGateName,"or " + outputIndex);
   }
 
   for (let i = 0; i < term.length - 1; i++) {
     if (term[i] == "x")
       continue;
-    Fsm2schematic.addOutputAt((term[i] == "1" ? "dff " + i: "not " + i), andGateName);
+    Algorithm.Fsm2schematic.addOutputAt((term[i] == "1" ? "dff " + i: "not " + i), andGateName);
   }
 
   // handle input
   if (term[term.length - 1] != "x")
-    Fsm2schematic.addOutputAt((term[term.length - 1] == "1" ? "input": "not input"), andGateName);
+    Algorithm.Fsm2schematic.addOutputAt((term[term.length - 1] == "1" ? "input": "not input"), andGateName);
 };
 
 // add ["101", "011", "1xx"] into schematic
-Fsm2schematic.addTerms = function(truthTable, outputIndex) {
+Algorithm.Fsm2schematic.addTerms = function(truthTable, outputIndex) {
   for (let i = 0; i < truthTable.length; i++)
-    Fsm2schematic.addTerm(truthTable[i], outputIndex, i);
+    Algorithm.Fsm2schematic.addTerm(truthTable[i], outputIndex, i);
 };
 
 // add states [["10x","011"],["001"]] into schematic
-Fsm2schematic.addStateTruthTables = function(truthTables) {
+Algorithm.Fsm2schematic.addStateTruthTables = function(truthTables) {
   for (let i = 0; i < truthTables.length; i++)
-    Fsm2schematic.addTerms(truthTables[i], i);
+    Algorithm.Fsm2schematic.addTerms(truthTables[i], i);
 };
 
 // add output ["01x"] into schematic
-Fsm2schematic.addOutputTruthTable = function(truthTable) {
-  Fsm2schematic.addTerms(truthTable, "output");
+Algorithm.Fsm2schematic.addOutputTruthTable = function(truthTable) {
+  Algorithm.Fsm2schematic.addTerms(truthTable, "output");
 };
 
 // return gates object only rather than functions
-Fsm2schematic.getGateObjects = function() {
+Algorithm.Fsm2schematic.getGateObjects = function() {
   var gates = {};
-  for (let obj in Fsm2schematic) {
-    if (typeof Fsm2schematic[obj] == "function")
+  for (let obj in Algorithm.Fsm2schematic) {
+    if (typeof Algorithm.Fsm2schematic[obj] == "function")
       continue;
-    gates[obj] = Fsm2schematic[obj];
+    gates[obj] = Algorithm.Fsm2schematic[obj];
   }
   return gates;
 };
-
-/*
-Fsm2schematic.removeEmptyGates = function(gates) {
-  for (let gate in gates)
-    if (gate != "output" && Fsm2schematic.outputIsEmpty(gates[gate].out))
-      delete gates[gate];
-  return gates;
-}
-
-Fsm2schematic.outputIsEmpty = function(outputs) {
-  for (let output of outputs)
-    if (typeof output !== 'undefined' && output.length > 0)
-      return false;
-
-  return true;
-}
-*/
 
 /** 
  *  return gates in format {
@@ -130,28 +113,29 @@ Fsm2schematic.outputIsEmpty = function(outputs) {
  *    ...
  *  }
  */
-Fsm2schematic.getGates = function() {
-  var gates = Fsm2schematic.getGateObjects();
-  // gates = Fsm2schematic.removeEmptyGates(gates);
+Algorithm.Fsm2schematic.getGates = function() {
+  var gates = Algorithm.Fsm2schematic.getGateObjects();
+  gates = Algorithm.Fsm2schematic.removeNoOutputGates(gates);
+  gates = Algorithm.Fsm2schematic.removeUselessOutput(gates);
   var keys = Object.keys(gates);
   var pinNumCounter = new Array(keys.length).fill(0);
   var arr = [];
   for (let i in gates) {
     gates[i]["type"] = i.split(" ")[0];
-    arr.push(Fsm2schematic.parseGate(gates[i], keys, pinNumCounter));
+    arr.push(Algorithm.Fsm2schematic.parseGate(gates[i], keys, pinNumCounter));
   }
   return arr;
 };
 
 // parse a whole gate outputs
-Fsm2schematic.parseGate = function(gate, keys, pinNumCounter) {
+Algorithm.Fsm2schematic.parseGate = function(gate, keys, pinNumCounter) {
   for (let j = 0; j < gate.out.length; j++)
-    gate.out[j] = Fsm2schematic.parsePins(gate.out[j], keys, pinNumCounter);
+    gate.out[j] = Algorithm.Fsm2schematic.parsePins(gate.out[j], keys, pinNumCounter);
   return gate;
 };
 
 // parse each output pin
-Fsm2schematic.parsePins = function(pins, keys, pinNumCounter) {
+Algorithm.Fsm2schematic.parsePins = function(pins, keys, pinNumCounter) {
   for (let i = 0; i < pins.length; i++) {
     var index = keys.indexOf(pins[i].name);
     delete pins[i].name;
@@ -166,7 +150,7 @@ Fsm2schematic.parsePins = function(pins, keys, pinNumCounter) {
   * fsm {"10": [{next: "00", out: "0"}, {next: "10", out: "0"}],  ....}
   * => ["101","011"]
   */
-Fsm2schematic.index2truthTable = function(index, fsm) {
+Algorithm.Fsm2schematic.index2truthTable = function(index, fsm) {
   var arr = [];
   for (let state in fsm) {
     for (let input = 0; input <= 1; input++) {
@@ -181,10 +165,10 @@ Fsm2schematic.index2truthTable = function(index, fsm) {
   * fsm {"10": [{next: "00", out: "0"}, {next: "10", out: "0"}],  ....}
   * => [["101","011"],["001"]]
   */
-Fsm2schematic.fsm2stateTruthTable = function(fsm, totalBit) {
+Algorithm.Fsm2schematic.fsm2stateTruthTable = function(fsm, totalBit) {
   var arr = [];
   for (let i = 0; i < totalBit; i++)
-    arr.push(QMAlgorithm.simplify(Fsm2schematic.index2truthTable(i, fsm)));
+    arr.push(QMAlgorithm.simplify(Algorithm.Fsm2schematic.index2truthTable(i, fsm)));
   return arr;
 };
 
@@ -192,7 +176,7 @@ Fsm2schematic.fsm2stateTruthTable = function(fsm, totalBit) {
   * fsm {"10": [{next: "00", out: "0"}, {next: "10", out: "0"}],  ....}
   * => ["001","011"]
   */
-Fsm2schematic.fsm2outputTruthTable = function(fsm) {
+Algorithm.Fsm2schematic.fsm2outputTruthTable = function(fsm) {
   var arr = [];
   for (let state in fsm) {
     for (let input = 0; input <= 1; input++) {
@@ -203,3 +187,34 @@ Fsm2schematic.fsm2outputTruthTable = function(fsm) {
   return QMAlgorithm.simplify(arr);
 };
 
+Algorithm.Fsm2schematic.removeUselessOutput = function(gates) {
+  var gateNames = Object.keys(gates);
+  for (let gate in gates)
+    Algorithm.Fsm2schematic.removeUselessPin(gateNames, gates[gate].out);
+  return gates;
+};
+
+// TODO: BUGS: not removing
+Algorithm.Fsm2schematic.removeUselessPin = function(gateNames, outpins) {
+  for (let i in outpins) {
+    for (let j in outpins[i]) {
+      if (typeof gateNames.indexOf(outpins[i][j].name) == -1)
+        outpins[i] = outpins[i].splice(j, 1);
+    }
+  }
+};
+
+Algorithm.Fsm2schematic.removeNoOutputGates = function(gates) {
+  for (let gate in gates)
+    if (gate != "output" && Algorithm.Fsm2schematic.outputIsEmpty(gates[gate].out))
+      delete gates[gate];
+  return gates;
+}
+
+Algorithm.Fsm2schematic.outputIsEmpty = function(outputs) {
+  for (let output of outputs)
+    if (typeof output !== 'undefined' && output.length > 0)
+      return false;
+
+  return true;
+}
