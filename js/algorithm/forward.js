@@ -1,7 +1,7 @@
 var Algorithm = Algorithm || {};
 
-Algorithm.forward = function(fsm, totalBit) {
-  return Algorithm.Fsm2schematic.convert(fsm, totalBit);
+Algorithm.forward = function(fsm) {
+  return Algorithm.Fsm2schematic.convert(fsm);
 };
 
 Algorithm.Fsm2schematic = Algorithm.Fsm2schematic || {};
@@ -13,7 +13,7 @@ Algorithm.Fsm2schematic = Algorithm.Fsm2schematic || {};
  *     "00": [{next: "00", out: "0"}, {next: "01", out: "0"}],
  *     "01": [{next: "00", out: "1"}, {next: "10", out: "1"}]
  *  }
- * @param {integer} totalBit: The total bit in fsm
+ * @param {integer} bitLength: The total bit in fsm
  *
  * @return {Object} schematic = {
  *   input = {"out":[[{"name":"not input"}, {"name":"and 01"}, {"name":"and 10"}]]}
@@ -22,17 +22,23 @@ Algorithm.Fsm2schematic = Algorithm.Fsm2schematic || {};
  *   ...
  * }
  */
-Algorithm.Fsm2schematic.convert = function(fsm, totalBit) {
-  var stateTruthTables = Algorithm.Fsm2schematic.fsm2stateTruthTable(fsm, totalBit);
+Algorithm.Fsm2schematic.convert = function(fsm) {
+  var bitLength = Algorithm.Fsm2schematic.getBitLength(fsm);
+  var stateTruthTables = Algorithm.Fsm2schematic.fsm2stateTruthTable(fsm, bitLength);
   var outputTruthTable = Algorithm.Fsm2schematic.fsm2outputTruthTable(fsm);
 
-  Algorithm.Fsm2schematic.init(totalBit)
+  Algorithm.Fsm2schematic.init(bitLength)
   Algorithm.Fsm2schematic.addStateTruthTables(stateTruthTables);
   Algorithm.Fsm2schematic.addOutputTruthTable(outputTruthTable);
 
   return Algorithm.Fsm2schematic.getGates();
 };
 
+Algorithm.Fsm2schematic.getBitLength = function(fsm) {
+  var totalStates = Object.keys(fsm).length;
+  var bitLength = (totalStates - 1).toString(2).length;
+  return bitLength;
+};
 
 Algorithm.Fsm2schematic.addGate = function(gate, output) {
   if (typeof output == "undefined")
@@ -45,12 +51,12 @@ Algorithm.Fsm2schematic.addOutputAt = function(gate, output) {
   Algorithm.Fsm2schematic[gate].out[0].push({name: output});
 };
 
-Algorithm.Fsm2schematic.init = function(totalBit) {
+Algorithm.Fsm2schematic.init = function(bitLength) {
   Algorithm.Fsm2schematic.addGate("or output", "output");
   Algorithm.Fsm2schematic.addGate("output");
   Algorithm.Fsm2schematic.addGate("input", "not input");
   Algorithm.Fsm2schematic.addGate("not input");
-  for (let i = 0; i < totalBit; i++) {
+  for (let i = 0; i < bitLength; i++) {
     Algorithm.Fsm2schematic.addGate("or " + i, "dff " + i);
     Algorithm.Fsm2schematic.addGate("dff " + i, "not " + i);
     Algorithm.Fsm2schematic.addGate("not " + i);
@@ -165,9 +171,9 @@ Algorithm.Fsm2schematic.index2truthTable = function(index, fsm) {
   * fsm {"10": [{next: "00", out: "0"}, {next: "10", out: "0"}],  ....}
   * => [["101","011"],["001"]]
   */
-Algorithm.Fsm2schematic.fsm2stateTruthTable = function(fsm, totalBit) {
+Algorithm.Fsm2schematic.fsm2stateTruthTable = function(fsm, bitLength) {
   var arr = [];
-  for (let i = 0; i < totalBit; i++)
+  for (let i = 0; i < bitLength; i++)
     arr.push(QMAlgorithm.simplify(Algorithm.Fsm2schematic.index2truthTable(i, fsm)));
   return arr;
 };
