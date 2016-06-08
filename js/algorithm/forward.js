@@ -1,6 +1,7 @@
 var Algorithm = Algorithm || {};
 Algorithm.Fsm2schematic = Algorithm.Fsm2schematic || {};
 var Fsm2schematic = Algorithm.Fsm2schematic;
+
 /**
  * Algorithm.forward() returns schematic based on the passed final state machine
  *
@@ -27,10 +28,11 @@ Fsm2schematic.convert = function(fsm) {
   var stateTruthTables = Fsm2schematic.fsm2stateTruthTable(fsm, bitLength);
   var outputTruthTable = Fsm2schematic.fsm2outputTruthTable(fsm);
 
-  Fsm2schematic.init(bitLength)
+  Fsm2schematic.init(bitLength);
   Fsm2schematic.addStateTruthTables(stateTruthTables);
   Fsm2schematic.addOutputTruthTable(outputTruthTable);
 
+  // For debugging, you can return getGateObjects()
   return Fsm2schematic.getGates();
 };
 
@@ -40,26 +42,28 @@ Fsm2schematic.getBitLength = function(fsm) {
   return bitLength;
 };
 
-Fsm2schematic.addGate = function(gate, output) {
-  if (typeof output == "undefined")
-    Fsm2schematic[gate] = {out: [[]]};
-  else
-    Fsm2schematic[gate] = {out: [[{name: output}]]};
+Fsm2schematic.getNewGate = function() {
+  return {out: [[]]};
 };
 
-Fsm2schematic.addOutputAt = function(gate, output) {
+Fsm2schematic.addGate = function(gate, output) {
+  if (typeof Fsm2schematic[gate] == "undefined")
+      Fsm2schematic[gate] = Fsm2schematic.getNewGate(output);
+
+  if (typeof output == "undefined")
+    return;
+  // check if output gate exists;
+  Fsm2schematic.addGate(output);
+  // TODO: This line is invalid when a gate contains multiple output port
   Fsm2schematic[gate].out[0].push({name: output});
 };
 
 Fsm2schematic.init = function(bitLength) {
   Fsm2schematic.addGate("or output", "output");
-  Fsm2schematic.addGate("output");
   Fsm2schematic.addGate("input", "not input");
-  Fsm2schematic.addGate("not input");
   for (let i = 0; i < bitLength; i++) {
     Fsm2schematic.addGate("or " + i, "dff " + i);
     Fsm2schematic.addGate("dff " + i, "not " + i);
-    Fsm2schematic.addGate("not " + i);
   }
 }; 
 
@@ -67,21 +71,21 @@ Fsm2schematic.init = function(bitLength) {
 Fsm2schematic.addTerm = function(term, outputIndex, termIndex) {
   if (outputIndex == "output") {
     var andGateName = "and output";
-    Fsm2schematic.addGate(andGateName,"or output");
+    Fsm2schematic.addGate(andGateName, "or output");
   } else {
     var andGateName = "and " + outputIndex + termIndex;
-    Fsm2schematic.addGate(andGateName,"or " + outputIndex);
+    Fsm2schematic.addGate(andGateName, "or " + outputIndex);
   }
 
   for (let i = 0; i < term.length - 1; i++) {
     if (term[i] == "x")
       continue;
-    Fsm2schematic.addOutputAt((term[i] == "1" ? "dff " + i: "not " + i), andGateName);
+    Fsm2schematic.addGate((term[i] == "1" ? "dff " + i: "not " + i), andGateName);
   }
 
   // handle input
   if (term[term.length - 1] != "x")
-    Fsm2schematic.addOutputAt((term[term.length - 1] == "1" ? "input": "not input"), andGateName);
+    Fsm2schematic.addGate((term[term.length - 1] == "1" ? "input": "not input"), andGateName);
 };
 
 // add ["101", "011", "1xx"] into schematic
@@ -121,8 +125,8 @@ Fsm2schematic.getGateObjects = function() {
  */
 Fsm2schematic.getGates = function() {
   var gates = Fsm2schematic.getGateObjects();
-  gates = Fsm2schematic.removeNoOutputGates(gates);
-  gates = Fsm2schematic.removeUselessOutput(gates);
+  gates = Fsm2schematic.removeRedundantGates(gates);
+  return gates;
   var keys = Object.keys(gates);
   var pinNumCounter = new Array(keys.length).fill(0);
   var arr = [];
@@ -193,21 +197,21 @@ Fsm2schematic.fsm2outputTruthTable = function(fsm) {
   return Algorithm.simplify(arr);
 };
 
-Fsm2schematic.removeUselessOutput = function(gates) {
-  var gateNames = Object.keys(gates);
-  for (let gate in gates)
-    Fsm2schematic.removeUselessPin(gateNames, gates[gate].out);
-  return gates;
-};
-
-// TODO: BUGS: not removing, should try removing multiple times
-Fsm2schematic.removeUselessPin = function(gateNames, outpins) {
-  for (let i in outpins) {
-    for (let j in outpins[i]) {
-      if (typeof gateNames.indexOf(outpins[i][j].name) == -1)
-        outpins[i] = outpins[i].splice(j, 1);
-    }
+/**
+ * Remove redundant gates: 
+ * 1. no output gates
+ * 2. redundant pins in gates
+ */
+Fsm2schematic.removeRedundantGates = function(gates) {
+  var beforeGateNumbers = -1;
+  var afterGateNumbers = -2;
+  while (afterGateNumbers != beforeGateNumbers) {
+    beforeGateNumbers = Object.keys(gates).length;
+    gates = Fsm2schematic.removeNoOutputGates(gates);
+    gates = Fsm2schematic.removeUselessOutput(gates);
+    afterGateNumbers = Object.keys(gates).length;
   }
+  return gates;
 };
 
 Fsm2schematic.removeNoOutputGates = function(gates) {
@@ -224,3 +228,17 @@ Fsm2schematic.outputIsEmpty = function(outputs) {
 
   return true;
 }
+
+Fsm2schematic.removeUselessOutput = function(gates) {
+  for (let gate in gates)
+    Fsm2schematic.removeUselessPin(gates, gates[gate].out);
+  return gates;
+};
+
+Fsm2schematic.removeUselessPin = function(gates, outpins) {
+  var gateNames = Object.keys(gates);
+  for (let i = 0; i < outpins.length; i++)
+    for (let j = 0; j < outpins[i].length; j++)
+      if (! (outpins[i][j].name in gates))
+        outpins[i] = outpins[i].splice(gateNames.indexOf(outpins[i][j]), 1);
+};
