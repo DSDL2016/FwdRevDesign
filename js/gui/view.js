@@ -1,7 +1,7 @@
 GUI.view = GUI.view || {};
 
 GUI.view.init = function(){
-    $('#stateLinkLabelWindow').hide();
+    $('.popUpWrapper').hide();
     $('#cancelSetLabel').click(function(){$('#stateLinkLabelWindow').hide();});
     this.currentView = 'schematicView';
     $('#toFSM').click(GUI.view.toggleView);
