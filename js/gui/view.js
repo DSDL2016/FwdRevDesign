@@ -2,6 +2,7 @@ GUI.view = GUI.view || {};
 
 GUI.view.init = function(){
     $('.popUpWrapper').hide();
+    $('#cancel').click(function(){$('.popUpWrapper').hide();});
     $('#cancelSetLabel').click(function(){$('#stateLinkLabelWindow').hide();});
     this.currentView = 'schematicView';
     $('#toFSM').click(GUI.view.toggleView);
@@ -92,6 +93,16 @@ GUI.view.showSetLinkWindow = function(id){
             GUI.fsm.setLinkLabel(id, $('#stateLinkLabel').val() );
             GUI.fsm.removeLinkVertex(id);
             $('#stateLinkLabelWindow').hide();
+        });
+    })(id);
+};
+
+GUI.view.showSetStateNameWindow = function(id){
+    $("#stateNameWindow").show();
+    (function(id){
+        $('#enterSetStateName').one('click',function(){
+            GUI.fsm.setStateName(id, $('#stateName').val() );
+            $('#stateNameWindow').hide();
         });
     })(id);
 };

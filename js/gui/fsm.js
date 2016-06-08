@@ -58,8 +58,10 @@ GUI.fsm._initPaper = function(paperView){
         if( cellView.model.attributes.type == 'fsm.Arrow'){
             GUI.view.showSetLinkWindow(cellView.model.id);
         }
+        else if(cellView.model.attributes.type == 'fsm.State'){
+            GUI.view.showSetStateNameWindow(cellView.model.id);
+        }
     });
-    
     
     $(document).keypress(function(evt){
         if( evt.key === 'Delete'){
@@ -94,6 +96,11 @@ GUI.fsm.newLink = function(id1, id2, label){
 
 GUI.fsm.setLinkLabel = function(id, label){
     GUI.fsm.graph.getCell(id).label(0, { attrs: {text: {text: label} }});
+};
+
+
+GUI.fsm.setStateName = function(id, name){
+    GUI.fsm.graph.getCell(id).attr({text: {text: name}});
 };
 
 
