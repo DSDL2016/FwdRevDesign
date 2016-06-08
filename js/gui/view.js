@@ -84,6 +84,7 @@ GUI.view.newState = function(){
     let x = $('#fsmPaper').scrollLeft() + $('.fsm').width() / 2 - 20;
     let y = $('#fsmPaper').scrollTop() + $('.fsm').height() / 2 - 20;
     let id = GUI.fsm.newState(x, y);
+    GUI.view.showSetStateNameWindow(id);
 };
 
 GUI.view.showSetLinkWindow = function(id){
