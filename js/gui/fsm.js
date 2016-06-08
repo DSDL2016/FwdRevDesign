@@ -23,6 +23,11 @@ GUI.fsm._initPaper = function(paperView){
         //     return true;
         // }
     });
+
+    var startState = new joint.shapes.fsm.StartState({
+        position: { x: 100, y: 100 }
+    });
+    this.graph.addCell(startState);
     
     // disable contexmenu
     this.paper.$el.on('contextmenu', function(evt) { 
@@ -32,7 +37,7 @@ GUI.fsm._initPaper = function(paperView){
 
     // register click to highlight (select)
     this.paper.on('cell:pointerclick', function(cellView, evt) {
-        if( cellView.model.attributes.type == 'fsm.State'){
+        if( cellView.model.attributes.type != 'fsm.Arrow'  ){
             let state = GUI.fsm.graph.getCell(cellView.model.id);
             if( GUI.fsm.selected ){
                 if( GUI.fsm.selected !== cellView.model.id ){
@@ -66,8 +71,11 @@ GUI.fsm._initPaper = function(paperView){
     $(document).keypress(function(evt){
         if( evt.key === 'Delete'){
             if( GUI.fsm.selected ){
-                GUI.fsm.graph.getCell(GUI.fsm.selected).remove();
-                GUI.fsm.selected = undefined;
+                let cell = GUI.fsm.graph.getCell(GUI.fsm.selected);
+                if(cell.attributes.type != 'fsm.StartState' ){
+                    cell.remove();
+                    GUI.fsm.selected = undefined;
+                }
             }
         }
     });
