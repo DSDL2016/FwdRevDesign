@@ -113,7 +113,7 @@ const Gate = {
     },
     d: {
         nIn: 1,
-        nOut: 1,
+        nOut: 2,
         name: 'D Flip-Flop',
         img: './imgs/D.png',
         type: 'seq',
