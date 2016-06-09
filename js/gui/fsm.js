@@ -24,10 +24,11 @@ GUI.fsm._initPaper = function(paperView){
         // }
     });
 
-    var startState = new joint.shapes.fsm.StartState({
-        position: { x: 100, y: 100 }
-    });
-    this.graph.addCell(startState);
+    // There is no start state
+    // var startState = new joint.shapes.fsm.StartState({
+    //     position: { x: 100, y: 100 }
+    // });
+    // this.graph.addCell(startState);
     
     // disable contexmenu
     this.paper.$el.on('contextmenu', function(evt) { 
