@@ -2,12 +2,12 @@ GUI.view = GUI.view || {};
 
 GUI.view.init = function(){
     $('.popUpWrapper').hide();
-    $('#cancel').click(function(){$('.popUpWrapper').hide();});
-    $('#cancelSetLabel').click(function(){$('#stateLinkLabelWindow').hide();});
+    $('.cancel').click(function(){$('.popUpWrapper').hide();});
     this.currentView = 'schematicView';
     $('#toFSM').click(GUI.view.toggleView);
     $('#toSchematic').click(GUI.view.toggleView);
     $('#newState').click(GUI.view.newState);
+    $('#fsmSettings').click(function(){$('#fsmSettingsWindow').show();});
     this._initGateListView();
     this._bindSchematicDrop();
 };

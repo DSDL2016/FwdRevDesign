@@ -47,17 +47,19 @@
                         <span>input/output: </span><input type="text" id="stateLinkLabel"/>
                     </div>
                     <div class="buttons">
-                        <button class="cancel" id="cancelSetLabel">Cancel</button> <button class="enter" id="enterSetLabel">Enter</button>
+                        <button class="cancel">Cancel</button> <button class="enter" id="enterSetLabel">Enter</button>
                     </div>
                 </div>
             </div>
             <div class="popUpWrapper" id="fsmSettingsWindow">
                 <div>
                     <div class="content">
-                        <span>input/output: </span><input type="text" id="stateLinkLabel"/>
+                        <span>Flip-flop type: </span><br/>
+                        <label><input type="radio" id="ffType" name="ffType" checked value="D"/>D Flip-Flop</label><br/>
+                        <label><input type="radio" id="ffType" name="ffType" value="JK"/>JK Flip-Flop</label>
                     </div>
                     <div class="buttons">
-                        <button class="cancel" id="cancelSetLabel">Cancel</button>
+                        <button class="cancel">Cancel</button>
                         <button class="enter" id="enterSetLabel">Enter</button>
                     </div>
                 </div>
@@ -69,7 +71,7 @@
                         <input type="text" id="stateName"/>
                     </div>
                     <div class="buttons">
-                        <button class="cancel" id="cancel">Cancel</button>
+                        <button class="cancel">Cancel</button>
                         <button class="enter" id="enterSetStateName">Enter</button>
                     </div>
                 </div>
@@ -90,6 +92,6 @@
     <script src="js/gui/fsm.js"></script>    
     <script src="js/gui/view.js"></script>    
     <script src="js/gui/init.js"></script>    
-    <link rel="stylesheet" href="css/gate.css" />    
+    <!-- <link rel="stylesheet" href="css/gate.css" />     -->
 
 </body>
