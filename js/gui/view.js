@@ -4,8 +4,8 @@ GUI.view.init = function(){
     $('.popUpWrapper').hide();
     $('.cancel').click(function(){$('.popUpWrapper').hide();});
     this.currentView = 'schematicView';
+    $('#toSchematic').click(GUI.view._toFSM);
     $('#toFSM').click(GUI.view.toggleView);
-    $('#toSchematic').click(GUI.view.toggleView);
     $('#newState').click(GUI.view.newState);
     $('#fsmSettings').click(function(){$('#fsmSettingsWindow').show();});
     this._initGateListView();
@@ -108,3 +108,18 @@ GUI.view.showSetStateNameWindow = function(id){
     })(id);
 };
 
+
+GUI.view._toFSM = function(){
+    let fsm = GUI.fsm.getFSM();
+    if( fsm.error ){
+        window.alert(fsm.error);
+        return;
+    }
+    let schematic = Algorithm.forward(fsm);
+    if( schematic.error ){
+        window.alert(schematic.error);
+        return;
+    }
+    GUI.schematic.drawSchematic(schematic);
+    GUI.view.toggleView();
+};
