@@ -28,11 +28,6 @@ GUI.fsm._initPaper = function(paperView){
     this.paper.$el.on('contextmenu', function(evt) { 
         evt.preventDefault();  
         var cellView = GUI.fsm.paper.findView(evt.target);
-        if (cellView) {
-            console.log(cellView.model.id);  // So now you have access to both the cell view and its model.
-            // ... display custom context menu, ...
-            console.log(cellView);
-        }
     });
 
     // register click to highlight (select)
@@ -56,7 +51,6 @@ GUI.fsm._initPaper = function(paperView){
                 GUI.fsm.selected = cellView.model.id;
             }
         }
-        console.log("click!!", evt, cellView);
     });
 
     // double click to set link lebel
@@ -109,5 +103,79 @@ GUI.fsm.removeLinkVertex = function(id){
     if(link.attributes.vertices){
         let lastVertexId = link.attributes.vertices.length - 1;    
         linkView.removeVertex(lastVertexId);
+    }
+};
+
+GUI.fsm.getFSM = function(){
+    let raw = GUI.fsm.graph.toJSON();
+    let idMapping = {};
+    let fsm = {};
+    let counter = 0;
+    for( let cell of raw.cells ){        
+        if( cell.type == 'fsm.State' ){
+            let id = String(counter);
+            counter += 1;
+            idMapping[cell.id] = id;
+            fsm[id] = [];
+        }
+        else if( cell.type == 'fsm.Start' ){
+            idMapping[cell.id] = 'start';
+        }
+    }
+    
+    for( let cell of raw.cells ){
+        if( cell.type == 'fsm.Arrow' ){
+            let source = cell.source;
+            let sourceId = idMapping[cell.source.id];
+            let nextId = idMapping[cell.target.id];
+            if( sourceId === undefined || nextId === undefined ){
+                return { error: "There is an edge whose target or source is undefined." };
+            }            
+            let input = Number(cell.labels[0].attrs.text.text[0]);
+            let output = Number(cell.labels[0].attrs.text.text[2]);
+            if( fsm[sourceId][input] !== undefined ){
+                return { error: "There is a state having two out edge with same input." };
+            }
+            if( output !== 0 && output !== 1 ){
+                return { error: "There is an edge whose output is not 0 or 1."};
+            }
+            fsm[sourceId][input] = { next: nextId, output: output };
+        }        
+    }
+    return fsm;    
+};
+
+
+GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
+    const defaultCenterX = 400;
+    const defaultCenterY = 300;
+    const defaultRadius = 200;
+    const defaultStartAngle = 0;
+    centerX = centerX || defaultCenterX;
+    centerY = centerY || defaultCenterY;
+    radius = radius || defaultRadius;
+    startAngle = startAngle || defaultStartAngle;
+    let nStates = Object.keys(fsm).length;
+    let dTheta = 2 * Math.PI / nStates; // delta theta
+    let idMapping = {};
+    let theta = startAngle;
+    // add states
+    for(let state in fsm){
+        let x = centerX + radius * Math.cos(theta);
+        let y = centerY + radius * Math.sin(theta);
+        let id = GUI.fsm.newState(x, y);
+        idMapping[state] = id;
+        theta += dTheta;
+    }
+    // add links
+    for(let state in fsm){
+        let sourceId = idMapping[state];
+        for(let input = 0; input < 2; input++){
+            if( fsm[state][input] ){
+                let targetId = idMapping[fsm[state][input].next];
+                let label = "" + input + '/' + fsm[state][input].output;
+                GUI.fsm.newLink(sourceId, targetId, label);
+            }
+        }
     }
 };
