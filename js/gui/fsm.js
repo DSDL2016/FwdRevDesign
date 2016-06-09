@@ -125,12 +125,23 @@ GUI.fsm.removeLinkVertex = function(id){
 GUI.fsm.getFSM = function(){
     let raw = GUI.fsm.graph.toJSON();
     let idMapping = {};
+    let idSet = new Set();
     let fsm = {};
     let counter = 0;
+    const legalStateName = /^[01]+$/;
     for( let cell of raw.cells ){        
         if( cell.type == 'fsm.State' ){
-            let id = String(counter);
-            counter += 1;
+            if( !cell.attrs.text ){
+                return {error: "There is a state with no name."};
+            }
+            if( !legalStateName.exec(cell.attrs.text.text) ){
+                return {error: "There is a state with illegal name."};
+            }
+            if( idSet.has(cell.attrs.text.text) ){
+                return {error: "There are states with duplicated name."};
+            }
+            let id = cell.attrs.text.text;
+            idSet.add(id);
             idMapping[cell.id] = id;
             fsm[id] = [];
         }
