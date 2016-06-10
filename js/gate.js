@@ -5,6 +5,12 @@ const Gate = {
         name: 'Input',
         img: 'imgs/input.png'
     },
+    output: {
+        nIn: 1,
+        nOut: 0,
+        name: 'Output',
+        img: 'imgs/output.png'
+    },    
     or: {
         nIn: 2,  // number of input pin
         nOut: 1, // number of output pin
