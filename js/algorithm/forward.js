@@ -126,7 +126,6 @@ Fsm2schematic.getGateObjects = function() {
 Fsm2schematic.getGates = function() {
   var gates = Fsm2schematic.getGateObjects();
   gates = Fsm2schematic.removeRedundantGates(gates);
-  return gates;
   var keys = Object.keys(gates);
   var pinNumCounter = new Array(keys.length).fill(0);
   var arr = [];
