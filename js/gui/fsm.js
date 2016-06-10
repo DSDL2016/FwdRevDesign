@@ -140,7 +140,7 @@ GUI.fsm.getFSM = function(){
             if( idSet.has(cell.attrs.text.text) ){
                 return {error: "There are states with duplicated name."};
             }
-            let id = cell.attrs.text.text;
+            let id = String(cell.attrs.text.text);
             idSet.add(id);
             idMapping[cell.id] = id;
             fsm[id] = [];
@@ -166,7 +166,7 @@ GUI.fsm.getFSM = function(){
             if( output !== 0 && output !== 1 ){
                 return { error: "There is an edge whose output is not 0 or 1."};
             }
-            fsm[sourceId][input] = { next: nextId, output: output };
+            fsm[sourceId][input] = { next: nextId, out: output };
         }        
     }
     return fsm;    
