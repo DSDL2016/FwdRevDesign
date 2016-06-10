@@ -1,4 +1,12 @@
-function topoSort(index, schematic, used, order){
+var Algorithm = Algorithm || {};
+Algorithm.schematic2Fsm = Algorithm.schematic2Fsm || {};
+var schematic2Fsm = Algorithm.schematic2Fsm;
+
+Algorithm.reverse = function(schematic, Gate) {
+  return schematic2Fsm.rev(schematic, Gate);
+};
+
+schematic2Fsm.topoSort = function(index, schematic, used, order){
 	used[index] = true;
 	for(var i = 0; i < schematic[index].out.length; i++){
 		var outs = schematic[index].out[i];
@@ -11,7 +19,7 @@ function topoSort(index, schematic, used, order){
 	}
 	order.push(index);
 }
-function evaluate(schematic, order, Gate){
+schematic2Fsm.evaluate = function(schematic, order, Gate){
 	for(var i = 0; i < schematic.length; i++){
         var now = schematic[order[i]];
 		var input = 0;
@@ -35,7 +43,7 @@ function evaluate(schematic, order, Gate){
 		}
 	}
 }
-function bin(value, digit){
+schematic2Fsm.bin = function(value, digit){
 	var result = Array(digit).fill(0);
 	var i = 0;
 	while(value > 0){
@@ -45,7 +53,7 @@ function bin(value, digit){
 	}
 	return result;
 }
-function binString(value, digit){
+schematic2Fsm.binString = function(value, digit){
 	var result = '';
 	var i = 0;
 	while(value > 0){
@@ -58,20 +66,20 @@ function binString(value, digit){
     }
 	return result;
 }
-function setValues(values, gates, schematic){
+schematic2Fsm.setValues = function(values, gates, schematic){
 	var valueArr = bin(values, gates.length);
 	for(var i = 0; i < gates.length; i++){
 		schematic[gates[i]].inputValue[0] = valueArr[i];
 	}
 }
-function getValues(gates, schematic){
+schematic2Fsm.getValues = function(gates, schematic){
 	var result = '';
 	for(var i = 0; i < gates.length; i++){
 		result += String(schematic[gates[i]].inputValue[0]);
 	}
 	return result;
 }
-function rev(schematic, Gate){
+schematic2Fsm.rev = function(schematic, Gate){
 	var inputs = [];
 	var outputs = [];
 	var states = [];
@@ -149,7 +157,3 @@ function rev(schematic, Gate){
 	}
 	return fsm;
 }
-
-var Algorithm = Algorithm || {};
-
-Algorithm.reverse = rev;
