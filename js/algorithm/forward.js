@@ -20,11 +20,11 @@ var Fsm2schematic = Algorithm.Fsm2schematic;
  *   ...
  * }
  */
-Algorithm.forward = function(fsm) {
-  return Fsm2schematic.convert(fsm);
+Algorithm.forward = function(fsm, ffType) {
+  return Fsm2schematic.convert(fsm, ffType);
 };
 
-Fsm2schematic.convert = function(fsm) {
+Fsm2schematic.convert = function(fsm, ffType) {
   var bitLength = Fsm2schematic.getBitLength(fsm);
   var stateTruthTables = Fsm2schematic.fsm2stateTruthTable(fsm, bitLength);
   var outputTruthTable = Fsm2schematic.fsm2outputTruthTable(fsm);
@@ -33,8 +33,10 @@ Fsm2schematic.convert = function(fsm) {
   Fsm2schematic.addStateTruthTables(stateTruthTables);
   Fsm2schematic.addOutputTruthTable(outputTruthTable);
 
+  Fsm2schematic.customizeFF(ffType);
+
   // For debugging, you can return getGateObjects()
-  return Fsm2schematic.getGateObjects();
+  return Fsm2schematic.getGates();
 };
 
 Fsm2schematic.getBitLength = function(fsm) {
@@ -47,6 +49,7 @@ Fsm2schematic.getNewGate = function() {
   return {out: [[]]};
 };
 
+// Add a new {gate} and connect its output port to {output}
 Fsm2schematic.addGate = function(gate, output, index = 0) {
   if (typeof Fsm2schematic[gate] == "undefined")
       Fsm2schematic[gate] = Fsm2schematic.getNewGate(output);
@@ -70,6 +73,13 @@ Fsm2schematic.init = function(bitLength) {
   Fsm2schematic.addGate("input", "not input");
   for (let i = 0; i < bitLength; i++)
     Fsm2schematic.addGate("or " + i, "dff " + i);
+};
+
+Fsm2schematic.renameGate = function(oldName, newName) {
+  if (! (oldName in Fsm2schematic))
+    throw "renameGate error: oldName not found";
+  Fsm2schematic[newName] = Fsm2schematic[oldName];
+  delete Fsm2schematic[oldName];
 }; 
 
 // add "101" into schematic
@@ -114,7 +124,24 @@ Fsm2schematic.addOutputTruthTable = function(truthTable) {
   Fsm2schematic.addTerms(truthTable, "output");
 };
 
-// return gates object only rather than functions
+// Customize default D flip-flop to parameter ffType
+// TODO: T flip-flop, D flip-flop
+Fsm2schematic.customizeFF = function(ffType) {
+  for (let i = 0; i < ffType.length; i++) {
+    if (ffType[i] == "t")
+      throw "T flip-flop is not implemented !"
+    if (ffType[i] == "d")
+      Fsm2schematic.renameGate("dff " + i, "d " + i);
+    if (ffType[i] == "j" || ffType[i] == "s") {
+      var ffName = ffType[i] == "j" ? "jk ": "sr ";
+      Fsm2schematic.renameGate("dff " + i, ffName + i);
+      Fsm2schematic.addGate("or " + i, "not " + i);
+      Fsm2schematic.addGate("not " + i, ffName + i);
+    }
+  }
+};
+
+// return gates object only, no functions 
 Fsm2schematic.getGateObjects = function() {
   var gates = {};
   for (let obj in Fsm2schematic) {
@@ -146,6 +173,7 @@ Fsm2schematic.getGates = function() {
 };
 
 // parse a whole gate outputs
+// TODO: This func. doesn't consider input order, but the order of ff matters.
 Fsm2schematic.parseGate = function(gate, keys, pinNumCounter) {
   for (let j = 0; j < gate.out.length; j++)
     gate.out[j] = Fsm2schematic.parsePins(gate.out[j], keys, pinNumCounter);
