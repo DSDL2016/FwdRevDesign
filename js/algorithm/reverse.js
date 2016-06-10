@@ -2,8 +2,8 @@ var Algorithm = Algorithm || {};
 Algorithm.schematic2Fsm = Algorithm.schematic2Fsm || {};
 var schematic2Fsm = Algorithm.schematic2Fsm;
 
-Algorithm.reverse = function(schematic, Gate) {
-  return schematic2Fsm.rev(schematic, Gate);
+Algorithm.reverse = function(schematic) {
+  return schematic2Fsm.rev(schematic);
 };
 
 schematic2Fsm.topoSort = function(index, schematic, used, order){
@@ -19,7 +19,7 @@ schematic2Fsm.topoSort = function(index, schematic, used, order){
 	}
 	order.push(index);
 }
-schematic2Fsm.evaluate = function(schematic, order, Gate){
+schematic2Fsm.evaluate = function(schematic, order){
 	for(var i = 0; i < schematic.length; i++){
         var now = schematic[order[i]];
 		var input = 0;
@@ -79,7 +79,7 @@ schematic2Fsm.getValues = function(gates, schematic){
 	}
 	return result;
 }
-schematic2Fsm.rev = function(schematic, Gate){
+schematic2Fsm.rev = function(schematic){
 	var inputs = [];
 	var outputs = [];
 	var states = [];
