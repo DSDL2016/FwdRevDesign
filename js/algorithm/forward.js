@@ -71,8 +71,6 @@ Fsm2schematic.addGate = function(gate, output, index = 0) {
 Fsm2schematic.init = function(bitLength) {
   Fsm2schematic.addGate("or output", "output");
   Fsm2schematic.addGate("input", "not input");
-  for (let i = 0; i < bitLength; i++)
-    Fsm2schematic.addGate("or " + i, "dff " + i);
 };
 
 Fsm2schematic.renameGate = function(oldName, newName) {
@@ -125,18 +123,25 @@ Fsm2schematic.addOutputTruthTable = function(truthTable) {
 };
 
 // Customize default D flip-flop to parameter ffType
-// TODO: T flip-flop, D flip-flop
 Fsm2schematic.customizeFF = function(ffType) {
   for (let i = 0; i < ffType.length; i++) {
-    if (ffType[i] == "t")
-      throw "T flip-flop is not implemented !"
-    if (ffType[i] == "d")
+    if (ffType[i] == "d") {
       Fsm2schematic.renameGate("dff " + i, "d " + i);
-    if (ffType[i] == "j" || ffType[i] == "s") {
+      Fsm2schematic.addGate("or " + i, "d " + i);
+    } else if (ffType[i] == "t") {
+      Fsm2schematic.renameGate("dff " + i, "t " + i);
+      Fsm2schematic.addGate("or " + i, "xor " + i);
+      Fsm2schematic.addGate("t " + i, "xor " + i);
+      Fsm2schematic.addGate("xor " + i, "t " + i);
+    }
+    else if (ffType[i] == "j" || ffType[i] == "s") {
       var ffName = ffType[i] == "j" ? "jk ": "sr ";
       Fsm2schematic.renameGate("dff " + i, ffName + i);
       Fsm2schematic.addGate("or " + i, "not " + i);
       Fsm2schematic.addGate("not " + i, ffName + i);
+      Fsm2schematic.addGate("or " + i, ffName + i);
+    } else {
+      throw `Unknown ffType ${ffType[i]}`;
     }
   }
 };
