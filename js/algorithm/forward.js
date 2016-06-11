@@ -35,8 +35,9 @@ Fsm2schematic.convert = function(fsm, ffType) {
 
   Fsm2schematic.customizeFF(ffType);
 
-  // For debugging, you can return getGateObjects()
-  return Fsm2schematic.getGates();
+  // For debugging, you can return Fsm2schematic.gates
+  //return Fsm2schematic.gates;
+  return Fsm2schematic.getProcessedGates();
 };
 
 Fsm2schematic.getBitLength = function(fsm) {
@@ -51,8 +52,8 @@ Fsm2schematic.getNewGate = function() {
 
 // Add a new {gate} and connect its output port to {output}
 Fsm2schematic.addGate = function(gate, output, index = 0) {
-  if (typeof Fsm2schematic[gate] == "undefined")
-      Fsm2schematic[gate] = Fsm2schematic.getNewGate(output);
+  if (typeof Fsm2schematic.gates[gate] == "undefined")
+      Fsm2schematic.gates[gate] = Fsm2schematic.getNewGate(output);
 
   if (typeof output == "undefined")
     return;
@@ -62,22 +63,23 @@ Fsm2schematic.addGate = function(gate, output, index = 0) {
   if (index > 1) throw "Number of output ports > 2 is not supported";
 
   // check if its second output port exists
-  if (typeof Fsm2schematic[gate].out[index] == "undefined")
-    Fsm2schematic[gate].out.push([]);
+  if (typeof Fsm2schematic.gates[gate].out[index] == "undefined")
+    Fsm2schematic.gates[gate].out.push([]);
 
-  Fsm2schematic[gate].out[index].push({name: output});
+  Fsm2schematic.gates[gate].out[index].push({name: output});
 };
 
 Fsm2schematic.init = function(bitLength) {
+  Fsm2schematic.gates = {};
   Fsm2schematic.addGate("or output", "output");
   Fsm2schematic.addGate("input", "not input");
 };
 
 Fsm2schematic.renameGate = function(oldName, newName) {
-  if (! (oldName in Fsm2schematic))
+  if (! (oldName in Fsm2schematic.gates))
     throw "renameGate error: oldName not found";
-  Fsm2schematic[newName] = Fsm2schematic[oldName];
-  delete Fsm2schematic[oldName];
+  Fsm2schematic.gates[newName] = Fsm2schematic.gates[oldName];
+  delete Fsm2schematic.gates[oldName];
 }; 
 
 // add "101" into schematic
@@ -146,17 +148,6 @@ Fsm2schematic.customizeFF = function(ffType) {
   }
 };
 
-// return gates object only, no functions 
-Fsm2schematic.getGateObjects = function() {
-  var gates = {};
-  for (let obj in Fsm2schematic) {
-    if (typeof Fsm2schematic[obj] == "function")
-      continue;
-    gates[obj] = Fsm2schematic[obj];
-  }
-  return gates;
-};
-
 /** 
  *  return gates in format {
  *    type: 'input',
@@ -164,8 +155,8 @@ Fsm2schematic.getGateObjects = function() {
  *    ...
  *  }
  */
-Fsm2schematic.getGates = function() {
-  var gates = Fsm2schematic.getGateObjects();
+Fsm2schematic.getProcessedGates = function() {
+  var gates = Fsm2schematic.gates;
   gates = Fsm2schematic.removeRedundantGates(gates);
   var keys = Object.keys(gates);
   var pinNumCounter = new Array(keys.length).fill(0);
