@@ -200,7 +200,7 @@ GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
         for(let input = 0; input < 2; input++){
             if( fsm[state][input] ){
                 let targetId = idMapping[fsm[state][input].next];
-                let label = "" + input + '/' + fsm[state][input].output;
+                let label = "" + input + '/' + fsm[state][input].out;
                 GUI.fsm.newLink(sourceId, targetId, label);
             }
         }
