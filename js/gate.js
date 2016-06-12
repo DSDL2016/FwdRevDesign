@@ -141,5 +141,30 @@ const Gate = {
                 ]
             ]
         ]
+    },
+    t: {
+        nIn: 1,
+        nOut: 2,
+        name: 'T Flip-Flop',
+        img: './imgs/T.png',
+        type: 'seq',
+        truthTable: [ // [Q+=0, /Q+=1][T][0][Q]
+            [ // Q (output pin 0)
+                [ // T == 0
+                    [0, 1]
+                ], 
+                [ // T = 1
+                    [1, 0]
+                ]
+            ],            
+            [ // /Q (output pin 1)
+                [ // T == 0
+                    [1, 0]
+                ], 
+                [ // T = 1
+                    [0, 1]
+                ]
+            ]
+        ]
     }
 };
