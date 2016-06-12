@@ -159,11 +159,11 @@ GUI.fsm.getFSM = function(){
                 return { error: "There is an edge whose target or source is undefined." };
             }            
             let input = Number(cell.labels[0].attrs.text.text[0]);
-            let output = Number(cell.labels[0].attrs.text.text[2]);
+            let output = cell.labels[0].attrs.text.text[2];
             if( fsm[sourceId][input] !== undefined ){
                 return { error: "There is a state having two out edge with same input." };
             }
-            if( output !== 0 && output !== 1 ){
+            if( output !== '0' && output !== '1' ){
                 return { error: "There is an edge whose output is not 0 or 1."};
             }
             fsm[sourceId][input] = { next: nextId, out: output };
