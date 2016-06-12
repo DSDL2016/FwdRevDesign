@@ -3,6 +3,7 @@ GUI.view = GUI.view || {};
 GUI.view.init = function(){
     $('.popUpWrapper').hide();
     $('.cancel').click(function(){$('.popUpWrapper').hide();});
+    $('#enterFsmSetting').click(function(){$('.popUpWrapper').hide();});
     this.currentView = 'schematicView';
     $('#toSchematic').click(GUI.view._toSchematic);
     $('#toFSM').click(GUI.view._toFSM);
@@ -115,7 +116,12 @@ GUI.view._toSchematic = function(){
         window.alert(fsm.error);
         return;
     }
-    let schematic = Algorithm.forward(fsm);
+    if( Object.keys(fsm).length === 0 ){
+        GUI.view.toggleView();
+        return;
+    }
+    let ffType = $('input:radio:checked[name="ffType"]').val();
+    let schematic = Algorithm.forward(fsm, ffType);
     if( schematic.error ){
         window.alert(schematic.error);
         return;
