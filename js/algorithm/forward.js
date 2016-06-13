@@ -29,6 +29,9 @@ Fsm2schematic.convert = function(fsm, ffType) {
   var stateTruthTables = Fsm2schematic.fsm2stateTruthTable(fsm, bitLength);
   var outputTruthTable = Fsm2schematic.fsm2outputTruthTable(fsm);
 
+  console.log("state truth tables(AB..{input}): " + JSON.stringify(stateTruthTables));
+  console.log("output truth table(AB..{input}): " + JSON.stringify(outputTruthTable));
+
   Fsm2schematic.init(bitLength);
   Fsm2schematic.addStateTruthTables(stateTruthTables);
   Fsm2schematic.addOutputTruthTable(outputTruthTable);
@@ -36,12 +39,16 @@ Fsm2schematic.convert = function(fsm, ffType) {
   Fsm2schematic.concatAndGate("and 1/0");
   Fsm2schematic.concatAndGate("and 0/1");
   Fsm2schematic.concatAndGate("and 0/0");
+  Fsm2schematic.concatAndGate("and output/0");
+
+//  Fsm2schematic.concatOrGate("or 0");
+//  Fsm2schematic.concatOrGate("or 1");
 
   Fsm2schematic.customizeFF(ffType);
 
   // For debugging, you can return Fsm2schematic.gates
   //return Fsm2schematic.gates;
-  return Fsm2schematic.getProcessedGates();
+  return Fsm2schematic.gates;
 };
 
 Fsm2schematic.getBitLength = function(fsm) {
@@ -62,10 +69,12 @@ Fsm2schematic.addGate = function(gate, output, index = 0) {
 
   if (typeof output == "undefined")
     return;
-  // emsure output gate exists;
+
+  // ensure output gate exists;
   Fsm2schematic.addGate(output);
 
-  if (index > 1) throw "Number of output ports > 2 is not supported";
+  if (index > 1)
+    console.log("Error: Number of output ports > 2 is not supported");
 
   // check if its second output port exists
   if (typeof Fsm2schematic.gates[gate].out[index] == "undefined")
@@ -83,21 +92,18 @@ Fsm2schematic.init = function(bitLength) {
 
 Fsm2schematic.renameGate = function(oldName, newName) {
   if (! (oldName in Fsm2schematic.gates))
-    throw "renameGate error: oldName not found";
+    console.log("Error: rename gate : oldName " + oldName + " not found");
   Fsm2schematic.gates[newName] = Fsm2schematic.gates[oldName];
   delete Fsm2schematic.gates[oldName];
 }; 
 
 // add "101" into schematic
 Fsm2schematic.addTerm = function(term, outputIndex, termIndex) {
-  if (outputIndex == "output") {
-    var andGateName = "and output";
-    Fsm2schematic.addGate(andGateName, "or output");
-  } else {
-    var andGateName = "and " + outputIndex + "/" + termIndex;
-    Fsm2schematic.addGate(andGateName, "or " + outputIndex);
-  }
+  // outputIndex = "output" when adding outputTruthTable terms
+  var andGateName = "and " + outputIndex + "/" + termIndex;
+  Fsm2schematic.addGate(andGateName, "or " + outputIndex);
 
+  // the last one is input, not state bit
   for (let i = 0; i < term.length - 1; i++) {
     if (term[i] == "x")
       continue;
@@ -125,11 +131,12 @@ Fsm2schematic.addStateTruthTables = function(truthTables) {
     Fsm2schematic.addTerms(truthTables[i], i);
 };
 
-// add output ["01x"] into schematic
+// add output ["01x", "10x"] into schematic
 Fsm2schematic.addOutputTruthTable = function(truthTable) {
   Fsm2schematic.addTerms(truthTable, "output");
 };
 
+// concatenate small AND gates as a general AND gate
 Fsm2schematic.concatAndGate = function(andGateName) {
   var gates = Fsm2schematic.gates;
   var totalAndGate = gates[andGateName].inputNum - 1;
@@ -159,10 +166,13 @@ Fsm2schematic.concatAndGate = function(andGateName) {
   }
 
   // remove duplicated gates
+  for (let arr of gates[andGateName].out)
+    for (let out of arr)
+      gates[out.name].inputNum --;
+
   delete gates[andGateName];
 };
 
-// Customize default D flip-flop to parameter ffType
 Fsm2schematic.customizeFF = function(ffType) {
   for (let i = 0; i < ffType.length; i++) {
     if (ffType[i] == "d") {
@@ -181,7 +191,7 @@ Fsm2schematic.customizeFF = function(ffType) {
       Fsm2schematic.addGate("not " + i, ffName + i);
       Fsm2schematic.addGate("or " + i, ffName + i);
     } else {
-      throw `Unknown ffType ${ffType[i]}`;
+      console.log("Unknown ffType " + ffType[i]);
     }
   }
 };
