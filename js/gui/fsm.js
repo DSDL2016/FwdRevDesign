@@ -97,7 +97,7 @@ GUI.fsm.newLink = function(id1, id2, label){
     var link = new joint.shapes.fsm.Arrow({
         source: { id: id1 },
         target: { id: id2 },
-        labels: [{ position: 0.5, attrs: { text: { text: label, 'font-weight': 'bold' } } }]
+        labels: [{ position: 0.3, attrs: { text: { text: label, 'font-weight': 'bold' } } }]
     });
     GUI.fsm.graph.addCell(link);
     return link.id;
