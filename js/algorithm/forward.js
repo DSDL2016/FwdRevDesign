@@ -29,22 +29,19 @@ Fsm2schematic.convert = function(fsm, ffType) {
   var stateTruthTables = Fsm2schematic.fsm2stateTruthTable(fsm, bitLength);
   var outputTruthTable = Fsm2schematic.fsm2outputTruthTable(fsm);
 
-  console.log("state truth tables(AB..{input}): " + JSON.stringify(stateTruthTables));
-  console.log("output truth table(AB..{input}): " + JSON.stringify(outputTruthTable));
+  console.log("state truth tables: " + JSON.stringify(stateTruthTables));
+  console.log("output truth table: " + JSON.stringify(outputTruthTable));
 
   Fsm2schematic.init(bitLength);
   Fsm2schematic.addStateTruthTables(stateTruthTables);
   Fsm2schematic.addOutputTruthTable(outputTruthTable);
 
   Fsm2schematic.customizeFF(ffType);
+  console.log("schematic: " + JSON.stringify(Fsm2schematic.gates));
 
-  Fsm2schematic.concatAndGate("and 1/0");
-  Fsm2schematic.concatAndGate("and 0/1");
-  Fsm2schematic.concatAndGate("and 0/0");
-  Fsm2schematic.concatAndGate("and output/0");
+  Fsm2schematic.concatGates();
+  console.log("after concating: " + JSON.stringify(Fsm2schematic.gates));
 
-  Fsm2schematic.concatOrGate("or 0");
-  Fsm2schematic.concatOrGate("or 1");
   // For debugging, you can return Fsm2schematic.gates
   //return Fsm2schematic.gates;
   return Fsm2schematic.getProcessedGates();
@@ -135,69 +132,37 @@ Fsm2schematic.addOutputTruthTable = function(truthTable) {
   Fsm2schematic.addTerms(truthTable, "output");
 };
 
-// concatenate small AND gates as a general AND gate
-Fsm2schematic.concatAndGate = function(andGateName) {
+Fsm2schematic.concatGates = function() {
+  for (let name in Fsm2schematic.gates)
+    if (name.split(" ")[0] == "and" || name.split(" ")[0] == "or")
+      Fsm2schematic.concatGate(name);
+}
+
+// concatenate small gates as a general big gate
+Fsm2schematic.concatGate = function(gateName) {
   var gates = Fsm2schematic.gates;
-  var totalAndGate = gates[andGateName].inputNum - 1;
+  var totalGate = gates[gateName].inputNum - 1;
 
-  // create cates and concat AND gates
-  for (let i = 0; i < totalAndGate; i++) {
-    if (i == totalAndGate - 1) // is the last one? connect to OR gate
-      // TODO: the OR gate may not be the first 
-      Fsm2schematic.addGate(andGateName + "|" + i, gates[andGateName].out[0][0].name);
-    else
-      Fsm2schematic.addGate(andGateName + "|" + i, andGateName + "|" + (i + 1));
-  }
+  if (totalGate == 0)
+    Fsm2schematic.addGate(gateName + "|0", gates[gateName].out[0][0].name);
 
-  // connect input pins
-  var connectPinIndex = -1; // because the first gate has 2 available input pins
-  for (let gateName in gates) { // traverse all gate
-    var gate = gates[gateName];
-    for (let arr of gate.out) { // traverse all output port
-      for (let i = 0; i < arr.length; i++) { // traverse all pins
-        if (arr[i].name == andGateName) {
-          var newName = andGateName + "|" + (connectPinIndex < 0 ? 0: connectPinIndex);
-          arr[i].name = newName; 
-          gates[newName].inputNum ++;
-          connectPinIndex ++;
-        }
-      }
-    }
-  }
-
-  // remove duplicated gates
-  for (let arr of gates[andGateName].out)
-    for (let out of arr)
-      gates[out.name].inputNum --;
-
-  delete gates[andGateName];
-};
-
-// concatenate small OR gates as a general Or gate
-Fsm2schematic.concatOrGate = function(orGateName) {
-  var gates = Fsm2schematic.gates;
-  var totalOrGate = gates[orGateName].inputNum - 1;
-
-  if (totalOrGate == 0)
-      Fsm2schematic.addGate(orGateName + "|0", gates[orGateName].out[0][0].name);
-
-  // create cates and concat OR gates
-  for (let i = 0; i < totalOrGate; i++) {
-    if (i == totalOrGate - 1) // is the last one? connect to FF
+  // create cates and concat 
+  for (let i = 0; i < totalGate; i++) {
+    if (i == totalGate - 1) // is the last one? connect to the original output  
       // TODO: the FF may not be the first
-      Fsm2schematic.addGate(orGateName + "|" + i, gates[orGateName].out[0][0].name);
+      Fsm2schematic.addGate(gateName + "|" + i, gates[gateName].out[0][0].name);
     else
-      Fsm2schematic.addGate(orGateName + "|" + i, orGateName + "|" + (i + 1));
+      Fsm2schematic.addGate(gateName + "|" + i, gateName + "|" + (i + 1));
   }
 
   // connect input pins
   var connectPinIndex = -1; // because the first gate has 2 available input pins
-  for (let gateName in gates) { // traverse all gate
-    var gate = gates[gateName];
+  for (let name in gates) { // traverse all gate
+    var gate = gates[name];
     for (let arr of gate.out) { // traverse all output port
       for (let i = 0; i < arr.length; i++) { // traverse all pins
-        if (arr[i].name == orGateName) {
-          var newName = orGateName + "|" + (connectPinIndex < 0 ? 0: connectPinIndex);
+        if (arr[i].name == gateName) {
+          var newName = gateName + "|" + (connectPinIndex < 0 ? 0: connectPinIndex);
           arr[i].name = newName; 
           gates[newName].inputNum ++;
           connectPinIndex ++;
@@ -207,12 +172,14 @@ Fsm2schematic.concatOrGate = function(orGateName) {
   }
 
   // remove duplicated gates
-  for (let arr of gates[orGateName].out)
+  for (let arr of gates[gateName].out)
     for (let out of arr)
       gates[out.name].inputNum --;
 
-  delete gates[orGateName];
+  delete gates[gateName];
 };
+
+// custimize flip flop to specfic types: T, D, SR, JK
 Fsm2schematic.customizeFF = function(ffType) {
   for (let i = 0; i < ffType.length; i++) {
     if (ffType[i] == "d") {
