@@ -33,6 +33,10 @@ Fsm2schematic.convert = function(fsm, ffType) {
   Fsm2schematic.addStateTruthTables(stateTruthTables);
   Fsm2schematic.addOutputTruthTable(outputTruthTable);
 
+  Fsm2schematic.concatAndGate("and 1/0");
+  Fsm2schematic.concatAndGate("and 0/1");
+  Fsm2schematic.concatAndGate("and 0/0");
+
   Fsm2schematic.customizeFF(ffType);
 
   // For debugging, you can return Fsm2schematic.gates
@@ -46,18 +50,19 @@ Fsm2schematic.getBitLength = function(fsm) {
   return bitLength;
 };
 
+// TODO: inputNum is not well-preserved. Many modification of gates doesn't update inputNum.
 Fsm2schematic.getNewGate = function() {
-  return {out: [[]]};
+  return {out: [[]], inputNum: 0};
 };
 
 // Add a new {gate} and connect its output port to {output}
 Fsm2schematic.addGate = function(gate, output, index = 0) {
   if (typeof Fsm2schematic.gates[gate] == "undefined")
-      Fsm2schematic.gates[gate] = Fsm2schematic.getNewGate(output);
+      Fsm2schematic.gates[gate] = Fsm2schematic.getNewGate();
 
   if (typeof output == "undefined")
     return;
-  // check if output gate exists;
+  // emsure output gate exists;
   Fsm2schematic.addGate(output);
 
   if (index > 1) throw "Number of output ports > 2 is not supported";
@@ -67,6 +72,7 @@ Fsm2schematic.addGate = function(gate, output, index = 0) {
     Fsm2schematic.gates[gate].out.push([]);
 
   Fsm2schematic.gates[gate].out[index].push({name: output});
+  Fsm2schematic.gates[output].inputNum ++;
 };
 
 Fsm2schematic.init = function(bitLength) {
@@ -88,7 +94,7 @@ Fsm2schematic.addTerm = function(term, outputIndex, termIndex) {
     var andGateName = "and output";
     Fsm2schematic.addGate(andGateName, "or output");
   } else {
-    var andGateName = "and " + outputIndex + termIndex;
+    var andGateName = "and " + outputIndex + "/" + termIndex;
     Fsm2schematic.addGate(andGateName, "or " + outputIndex);
   }
 
@@ -98,7 +104,7 @@ Fsm2schematic.addTerm = function(term, outputIndex, termIndex) {
 
     if (term[i] == "1")
       Fsm2schematic.addGate("dff " + i, andGateName);
-    else
+    else // from dff negative output port
       Fsm2schematic.addGate("dff " + i, andGateName, 1);
   }
 
@@ -122,6 +128,38 @@ Fsm2schematic.addStateTruthTables = function(truthTables) {
 // add output ["01x"] into schematic
 Fsm2schematic.addOutputTruthTable = function(truthTable) {
   Fsm2schematic.addTerms(truthTable, "output");
+};
+
+Fsm2schematic.concatAndGate = function(andGateName) {
+  var gates = Fsm2schematic.gates;
+  var totalAndGate = gates[andGateName].inputNum - 1;
+
+  // create cates and concat and gates
+  for (let i = 0; i < totalAndGate; i++) {
+    if (i == totalAndGate - 1) // is the last one? connect to or gate
+      Fsm2schematic.addGate(andGateName + "|" + i, gates[andGateName].out[0][0].name);
+    else
+      Fsm2schematic.addGate(andGateName + "|" + i, andGateName + "|" + (i + 1));
+  }
+
+  // connect input pins
+  var connectPinIndex = -1; // because the first gate has 2 available input pins
+  for (let gateName in gates) { // traverse all gate
+    var gate = gates[gateName];
+    for (let arr of gate.out) { // traverse all output port
+      for (let i = 0; i < arr.length; i++) { // traverse all pins
+        if (arr[i].name == andGateName) {
+          var newName = andGateName + "|" + (connectPinIndex < 0 ? 0: connectPinIndex);
+          arr[i].name = newName; 
+          gates[newName].inputNum ++;
+          connectPinIndex ++;
+        }
+      }
+    }
+  }
+
+  // remove duplicated gates
+  delete gates[andGateName];
 };
 
 // Customize default D flip-flop to parameter ffType
