@@ -127,8 +127,8 @@ GUI.view._toSchematic = function(){
         return;
     }
     GUI.schematic.graph.clear();
-    GUI.schematic.drawSchematic(schematic);
     GUI.view.toggleView();
+    GUI.schematic.drawSchematic(schematic);
 };
 
 GUI.view._toFSM = function(){
