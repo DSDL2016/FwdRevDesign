@@ -1,0 +1,19 @@
+<script src="../js/algorithm/qm/qm-min.js"></script> 
+<script src="../js/algorithm/qm/QMAlgorithm.js"></script> 
+<script src="../js/algorithm/forward.js"></script> 
+<script>
+var fsm = {
+  "10": [{next: "10", out: "0"}, {next: "10", out: "0"}],
+  "00": [{next: "01", out: "0"}, {next: "01", out: "0"}],
+  "01": [{next: "00", out: "1"}, {next: "10", out: "1"}]
+};
+
+/*var fsm = {
+  "1":[{"next":"0","out":"1"},{"next":"1","out":"0"}],
+  "0":[{"next":"1","out":"1"},{"next":"0","out":"0"}]
+};*/
+var ffType = "dd";
+var ans = Algorithm.forward(fsm, ffType);
+for (let each in ans)
+  document.write(each + " = " + JSON.stringify(ans[each]) + "<br>");
+</script>
