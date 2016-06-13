@@ -185,6 +185,7 @@ GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
     let nStates = Object.keys(fsm).length;
     let dTheta = 2 * Math.PI / nStates; // delta theta
     let idMapping = {};
+    let xytheta = {};
     let theta = startAngle;
     // add states
     for(let state in fsm){
@@ -192,6 +193,7 @@ GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
         let y = centerY + radius * Math.sin(theta);
         let id = GUI.fsm.newState(x, y);
         idMapping[state] = id;
+        xytheta[id] = {theta: theta, x: x, y: y};
         theta += dTheta;
     }
     // add links
@@ -201,7 +203,18 @@ GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
             if( fsm[state][input] ){
                 let targetId = idMapping[fsm[state][input].next];
                 let label = "" + input + '/' + fsm[state][input].out;
-                GUI.fsm.newLink(sourceId, targetId, label);
+                let linkId = GUI.fsm.newLink(sourceId, targetId, label);
+                if( sourceId === targetId ){
+                    let link = GUI.fsm.graph.getCell(linkId);
+                    const dvTheta = Math.PI / 10;
+                    const vr = 100;
+                    let vX1 = 20 + xytheta[sourceId].x + Math.cos(xytheta[sourceId].theta + dvTheta) * vr;
+                    let vY1 = 20 + xytheta[sourceId].y + Math.sin(xytheta[sourceId].theta + dvTheta) * vr;
+                    let vX2 = 20 + xytheta[sourceId].x + Math.cos(xytheta[sourceId].theta - dvTheta) * vr;
+                    let vY2 = 20 + xytheta[sourceId].y + Math.sin(xytheta[sourceId].theta - dvTheta) * vr;                    
+                    link.findView(GUI.fsm.paper).addVertex({x: vX1, y: vY1});
+                    link.findView(GUI.fsm.paper).addVertex({x: vX2, y: vY2});
+                }
             }
         }
     }
