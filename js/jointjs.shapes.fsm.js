@@ -10,9 +10,7 @@ joint.shapes.fsm.State = joint.shapes.basic.Circle.extend({
     }, joint.shapes.basic.Circle.prototype.defaults)
 });
 
-joint.shapes.fsm.StartState = joint.dia.Element.extend({
-
-    markup: '<g class="rotatable"><g class="scalable"><circle/></g></g>',
+joint.shapes.fsm.StartState = joint.shapes.basic.Circle.extend({
 
     defaults: joint.util.deepSupplement({
 
@@ -20,13 +18,17 @@ joint.shapes.fsm.StartState = joint.dia.Element.extend({
         size: { width: 40, height: 40 },
         attrs: {
             circle: {
-                transform: 'translate(10, 10)',
-                r: 10,
                 fill: '#000000'
+            },
+            text: {
+                text: 'start',
+                fill: '#FFFFFF',
+                'font-weight': '800'
             }
+            
         }
 
-    }, joint.dia.Element.prototype.defaults)
+    }, joint.shapes.basic.Circle.prototype.defaults)
 });
 
 joint.shapes.fsm.EndState = joint.dia.Element.extend({

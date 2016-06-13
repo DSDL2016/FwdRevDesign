@@ -15,8 +15,8 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="input.svg"
-   inkscape:export-filename="/home/tinray/tmp/FwdRevDesign/imgs/input.png"
+   sodipodi:docname="output.svg"
+   inkscape:export-filename="/home/tinray/tmp/FwdRevDesign/imgs/output.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -52,7 +52,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -63,7 +63,7 @@
      transform="translate(0,-952.36223)">
     <path
        style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 1.0113353,979.86224 74.2443687,0 24.748126,24.99996 -24.748126,20 -74.2443687,0 0,-44.99996"
+       d="m 99.229959,979.86224 -74.244365,0 -24.74812607,24.99996 24.74812607,20 74.244365,0 0,-44.99996"
        id="path4138"
        inkscape:connector-curvature="0" />
   </g>

@@ -36,6 +36,7 @@
             <div class="fsm">
                 <button id="newState">+</button>
                 <button id="toSchematic">→</button>
+                <button class="setting" id="fsmSettings">⚙</button>
                 <div id="fsmPaper">
                     
                 </div>
@@ -46,7 +47,31 @@
                         <span>input/output: </span><input type="text" id="stateLinkLabel"/>
                     </div>
                     <div class="buttons">
-                        <button class="cancel" id="cancelSetLabel">Cancel</button> <button class="enter" id="enterSetLabel">Enter</button>
+                        <button class="cancel">Cancel</button> <button class="enter" id="enterSetLabel">Enter</button>
+                    </div>
+                </div>
+            </div>
+            <div class="popUpWrapper" id="fsmSettingsWindow">
+                <div>
+                    <div class="content">
+                        <span>Flip-flop type: </span><br/>
+                        <input type="text" id="ffType" value="d"/>
+                    </div>
+                    <div class="buttons">
+                        <!-- <button class="cancel">Cancel</button> -->
+                        <button class="enter" id="enterFsmSetting">Enter</button>
+                    </div>
+                </div>
+            </div>
+            <div class="popUpWrapper" id="stateNameWindow">
+                <div>
+                    <div class="content">
+                        <span>state name:</span>
+                        <input type="text" id="stateName"/>
+                    </div>
+                    <div class="buttons">
+                        <button class="cancel">Cancel</button>
+                        <button class="enter" id="enterSetStateName">Enter</button>
                     </div>
                 </div>
             </div>
@@ -54,6 +79,8 @@
     </div>
     <link rel="stylesheet" href="bower_components/jointjs/dist/joint.css" />
     <script src="js/gate.js"></script>
+    <script src="js/algorithm/qm/QMAlgorithm.js"></script>
+    <script src="js/algorithm/qm/qm-min.js"></script>
     <script src="js/algorithm/forward.js"></script>
     <script src="js/algorithm/reverse.js"></script>    
     <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -66,6 +93,6 @@
     <script src="js/gui/fsm.js"></script>    
     <script src="js/gui/view.js"></script>    
     <script src="js/gui/init.js"></script>    
-    <link rel="stylesheet" href="css/gate.css" />    
+    <!-- <link rel="stylesheet" href="css/gate.css" />     -->
 
 </body>

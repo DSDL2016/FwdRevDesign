@@ -36,6 +36,22 @@
     z-index: 30;
 }
 
+#fsmSettings{
+    top: 15px;
+    right: 50px;
+    color: #3e3e3e;
+    background-color: rgba(0,0,0,0.01);
+    font-size: 40px;
+}
+
+#fsmSettings:hover{
+    color: white;
+    background-color: rgba(0, 0, 0, 0.55);
+}
+
+#fsmSettingsWindow input {
+    width: 100%;
+}
 
 #newState{
     bottom: 50px;
