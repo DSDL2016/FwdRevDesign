@@ -49,6 +49,9 @@
     background-color: rgba(0, 0, 0, 0.55);
 }
 
+#fsmSettingsWindow input {
+    width: 100%;
+}
 
 #newState{
     bottom: 50px;

@@ -120,7 +120,7 @@ GUI.view._toSchematic = function(){
         GUI.view.toggleView();
         return;
     }
-    let ffType = $('input:radio:checked[name="ffType"]').val();
+    let ffType = $('#ffType').val();
     let schematic = Algorithm.forward(fsm, ffType);
     if( schematic.error ){
         window.alert(schematic.error);
