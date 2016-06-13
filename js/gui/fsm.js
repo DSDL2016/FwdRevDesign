@@ -207,7 +207,9 @@ GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
                 if( sourceId === targetId ){
                     let link = GUI.fsm.graph.getCell(linkId);
                     const dvTheta = Math.PI / 10;
-                    const vr = 100;
+                    const vr1 = 100;
+                    const vr2 = 150;
+                    let vr = input == 1 ? vr1: vr2;
                     let vX1 = 20 + xytheta[sourceId].x + Math.cos(xytheta[sourceId].theta + dvTheta) * vr;
                     let vY1 = 20 + xytheta[sourceId].y + Math.sin(xytheta[sourceId].theta + dvTheta) * vr;
                     let vX2 = 20 + xytheta[sourceId].x + Math.cos(xytheta[sourceId].theta - dvTheta) * vr;
