@@ -3,19 +3,21 @@ const Gate = {
         type: 'cmb',
         nIn: 1,
         nOut: 1,
-        img: '',
+        img: 'imgs/input.png',
         name: 'Input',
         truthTable: [
             [0],
             [1]
         ]
     },
-    output: {
+	output: {
+        type: 'cmb',
         nIn: 1,
         nOut: 0,
-        name: 'Output',
-        img: 'imgs/output.png'
-    },    
+		img: 'imgs/output.png',
+		name: 'Output',
+        truthTable: [[],[]]
+    },
     or: {
 		type: 'cmb',        // 'cmb' => combinational, 'seq' => sequential
         nIn: 2,  // number of input pin
@@ -151,12 +153,5 @@ const Gate = {
 				[1, 0] //1
 			]
 		}
-    },
-	output: {
-        type: 'cmb',
-        nIn: 1,
-        nOut: 0,
-		img: '',
-        truthTable: [[],[]]
     }
 };
