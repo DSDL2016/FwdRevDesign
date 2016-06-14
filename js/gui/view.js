@@ -1,12 +1,14 @@
 GUI.view = GUI.view || {};
 
 GUI.view.init = function(){
-    $('#stateLinkLabelWindow').hide();
-    $('#cancelSetLabel').click(function(){$('#stateLinkLabelWindow').hide();});
+    $('.popUpWrapper').hide();
+    $('.cancel').click(function(){$('.popUpWrapper').hide();});
+    $('#enterFsmSetting').click(function(){$('.popUpWrapper').hide();});
     this.currentView = 'schematicView';
-    $('#toFSM').click(GUI.view.toggleView);
-    $('#toSchematic').click(GUI.view.toggleView);
+    $('#toSchematic').click(GUI.view._toSchematic);
+    $('#toFSM').click(GUI.view._toFSM);
     $('#newState').click(GUI.view.newState);
+    $('#fsmSettings').click(function(){$('#fsmSettingsWindow').show();});
     this._initGateListView();
     this._bindSchematicDrop();
 };
@@ -83,6 +85,7 @@ GUI.view.newState = function(){
     let x = $('#fsmPaper').scrollLeft() + $('.fsm').width() / 2 - 20;
     let y = $('#fsmPaper').scrollTop() + $('.fsm').height() / 2 - 20;
     let id = GUI.fsm.newState(x, y);
+    GUI.view.showSetStateNameWindow(id);
 };
 
 GUI.view.showSetLinkWindow = function(id){
@@ -96,3 +99,46 @@ GUI.view.showSetLinkWindow = function(id){
     })(id);
 };
 
+GUI.view.showSetStateNameWindow = function(id){
+    $("#stateNameWindow").show();
+    (function(id){
+        $('#enterSetStateName').one('click',function(){
+            GUI.fsm.setStateName(id, $('#stateName').val() );
+            $('#stateNameWindow').hide();
+        });
+    })(id);
+};
+
+
+GUI.view._toSchematic = function(){
+    let fsm = GUI.fsm.getFSM();
+    if( fsm.error ){
+        window.alert(fsm.error);
+        return;
+    }
+    if( Object.keys(fsm).length === 0 ){
+        GUI.view.toggleView();
+        return;
+    }
+    let ffType = $('#ffType').val();
+    let schematic = Algorithm.forward(fsm, ffType);
+    if( schematic.error ){
+        window.alert(schematic.error);
+        return;
+    }
+    GUI.schematic.graph.clear();
+    GUI.view.toggleView();
+    GUI.schematic.drawSchematic(schematic);
+};
+
+GUI.view._toFSM = function(){
+    let schematic = GUI.schematic.getSchematic();
+    if( schematic.error ){
+        window.alert(schematic.error);
+        return;
+    }
+    let fsm = Algorithm.reverse(schematic);
+    GUI.fsm.graph.clear();
+    GUI.fsm.drawFSM(fsm);
+    GUI.view.toggleView();
+};

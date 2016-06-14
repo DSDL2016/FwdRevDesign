@@ -50,3 +50,10 @@ button.cancel {
 button.enter {
     background-color: rgb(38, 167, 177);
 }
+
+
+@media (max-width: 400px){
+    .title{
+        display: none;
+    } 
+}

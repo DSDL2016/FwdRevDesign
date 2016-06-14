@@ -10,6 +10,12 @@ const Gate = {
             [1]
         ]
     },
+    output: {
+        nIn: 1,
+        nOut: 0,
+        name: 'Output',
+        img: 'imgs/output.png'
+    },    
     or: {
 		type: 'cmb',        // 'cmb' => combinational, 'seq' => sequential
         nIn: 2,  // number of input pin

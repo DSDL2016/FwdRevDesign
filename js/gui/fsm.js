@@ -23,6 +23,12 @@ GUI.fsm._initPaper = function(paperView){
         //     return true;
         // }
     });
+
+    // There is no start state
+    // var startState = new joint.shapes.fsm.StartState({
+    //     position: { x: 100, y: 100 }
+    // });
+    // this.graph.addCell(startState);
     
     // disable contexmenu
     this.paper.$el.on('contextmenu', function(evt) { 
@@ -32,7 +38,7 @@ GUI.fsm._initPaper = function(paperView){
 
     // register click to highlight (select)
     this.paper.on('cell:pointerclick', function(cellView, evt) {
-        if( cellView.model.attributes.type == 'fsm.State'){
+        if( cellView.model.attributes.type != 'fsm.Arrow'  ){
             let state = GUI.fsm.graph.getCell(cellView.model.id);
             if( GUI.fsm.selected ){
                 if( GUI.fsm.selected !== cellView.model.id ){
@@ -58,14 +64,19 @@ GUI.fsm._initPaper = function(paperView){
         if( cellView.model.attributes.type == 'fsm.Arrow'){
             GUI.view.showSetLinkWindow(cellView.model.id);
         }
+        else if(cellView.model.attributes.type == 'fsm.State'){
+            GUI.view.showSetStateNameWindow(cellView.model.id);
+        }
     });
-    
     
     $(document).keypress(function(evt){
         if( evt.key === 'Delete'){
             if( GUI.fsm.selected ){
-                GUI.fsm.graph.getCell(GUI.fsm.selected).remove();
-                GUI.fsm.selected = undefined;
+                let cell = GUI.fsm.graph.getCell(GUI.fsm.selected);
+                if(cell.attributes.type != 'fsm.StartState' ){
+                    cell.remove();
+                    GUI.fsm.selected = undefined;
+                }
             }
         }
     });
@@ -86,7 +97,7 @@ GUI.fsm.newLink = function(id1, id2, label){
     var link = new joint.shapes.fsm.Arrow({
         source: { id: id1 },
         target: { id: id2 },
-        labels: [{ position: 0.5, attrs: { text: { text: label, 'font-weight': 'bold' } } }]
+        labels: [{ position: 0.3, attrs: { text: { text: label, 'font-weight': 'bold' } } }]
     });
     GUI.fsm.graph.addCell(link);
     return link.id;
@@ -94,6 +105,11 @@ GUI.fsm.newLink = function(id1, id2, label){
 
 GUI.fsm.setLinkLabel = function(id, label){
     GUI.fsm.graph.getCell(id).label(0, { attrs: {text: {text: label} }});
+};
+
+
+GUI.fsm.setStateName = function(id, name){
+    GUI.fsm.graph.getCell(id).attr({text: {text: name}});
 };
 
 
@@ -109,12 +125,23 @@ GUI.fsm.removeLinkVertex = function(id){
 GUI.fsm.getFSM = function(){
     let raw = GUI.fsm.graph.toJSON();
     let idMapping = {};
+    let idSet = new Set();
     let fsm = {};
     let counter = 0;
+    const legalStateName = /^[01]+$/;
     for( let cell of raw.cells ){        
         if( cell.type == 'fsm.State' ){
-            let id = String(counter);
-            counter += 1;
+            if( !cell.attrs.text ){
+                return {error: "There is a state with no name."};
+            }
+            if( !legalStateName.exec(cell.attrs.text.text) ){
+                return {error: "There is a state with illegal name."};
+            }
+            if( idSet.has(cell.attrs.text.text) ){
+                return {error: "There are states with duplicated name."};
+            }
+            let id = String(cell.attrs.text.text);
+            idSet.add(id);
             idMapping[cell.id] = id;
             fsm[id] = [];
         }
@@ -132,14 +159,14 @@ GUI.fsm.getFSM = function(){
                 return { error: "There is an edge whose target or source is undefined." };
             }            
             let input = Number(cell.labels[0].attrs.text.text[0]);
-            let output = Number(cell.labels[0].attrs.text.text[2]);
+            let output = cell.labels[0].attrs.text.text[2];
             if( fsm[sourceId][input] !== undefined ){
                 return { error: "There is a state having two out edge with same input." };
             }
-            if( output !== 0 && output !== 1 ){
+            if( output !== '0' && output !== '1' ){
                 return { error: "There is an edge whose output is not 0 or 1."};
             }
-            fsm[sourceId][input] = { next: nextId, output: output };
+            fsm[sourceId][input] = { next: nextId, out: output };
         }        
     }
     return fsm;    
@@ -158,6 +185,7 @@ GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
     let nStates = Object.keys(fsm).length;
     let dTheta = 2 * Math.PI / nStates; // delta theta
     let idMapping = {};
+    let xytheta = {};
     let theta = startAngle;
     // add states
     for(let state in fsm){
@@ -165,6 +193,7 @@ GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
         let y = centerY + radius * Math.sin(theta);
         let id = GUI.fsm.newState(x, y);
         idMapping[state] = id;
+        xytheta[id] = {theta: theta, x: x, y: y};
         theta += dTheta;
     }
     // add links
@@ -173,8 +202,21 @@ GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
         for(let input = 0; input < 2; input++){
             if( fsm[state][input] ){
                 let targetId = idMapping[fsm[state][input].next];
-                let label = "" + input + '/' + fsm[state][input].output;
-                GUI.fsm.newLink(sourceId, targetId, label);
+                let label = "" + input + '/' + fsm[state][input].out;
+                let linkId = GUI.fsm.newLink(sourceId, targetId, label);
+                if( sourceId === targetId ){
+                    let link = GUI.fsm.graph.getCell(linkId);
+                    const dvTheta = Math.PI / 10;
+                    const vr1 = 100;
+                    const vr2 = 150;
+                    let vr = input == 1 ? vr1: vr2;
+                    let vX1 = 20 + xytheta[sourceId].x + Math.cos(xytheta[sourceId].theta + dvTheta) * vr;
+                    let vY1 = 20 + xytheta[sourceId].y + Math.sin(xytheta[sourceId].theta + dvTheta) * vr;
+                    let vX2 = 20 + xytheta[sourceId].x + Math.cos(xytheta[sourceId].theta - dvTheta) * vr;
+                    let vY2 = 20 + xytheta[sourceId].y + Math.sin(xytheta[sourceId].theta - dvTheta) * vr;                    
+                    link.findView(GUI.fsm.paper).addVertex({x: vX1, y: vY1});
+                    link.findView(GUI.fsm.paper).addVertex({x: vX2, y: vY2});
+                }
             }
         }
     }

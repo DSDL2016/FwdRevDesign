@@ -18,10 +18,10 @@ GUI.schematic._initPaper = function(paperView){
         model: this.graph,
         defaultLink: new joint.shapes.gate.Link({}),
         interactive: function(cellView) {
-            if (cellView.model instanceof joint.dia.Link) {
-                // Disable the default vertex add functionality on pointerdown.
-                return { vertexAdd: false };
-            }
+            // if (cellView.model instanceof joint.dia.Link) {
+            //     // Disable the default vertex add functionality on pointerdown.
+            //     return { vertexAdd: false };
+            // }
             return true;
         }
     });
