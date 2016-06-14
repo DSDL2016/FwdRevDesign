@@ -40,7 +40,9 @@ Fsm2schematic.convert = function(fsm, ffType) {
   console.log("schematic: " + JSON.stringify(Fsm2schematic.gates));
 
   Fsm2schematic.concatGates();
-  console.log("after concating: " + JSON.stringify(Fsm2schematic.gates));
+
+  Fsm2schematic.removeEmptyGates();
+  Fsm2schematic.removeRedundantGates();
 
   // For debugging, you can return Fsm2schematic.gates
   //return Fsm2schematic.gates;
@@ -53,7 +55,6 @@ Fsm2schematic.getBitLength = function(fsm) {
   return bitLength;
 };
 
-// TODO: inputNum is not well-preserved. Many modification of gates doesn't update inputNum.
 Fsm2schematic.getNewGate = function() {
   return {out: [[]], inputNum: 0};
 };
@@ -212,7 +213,6 @@ Fsm2schematic.customizeFF = function(ffType) {
  */
 Fsm2schematic.getProcessedGates = function() {
   var gates = Fsm2schematic.gates;
-  gates = Fsm2schematic.removeRedundantGates(gates);
   var keys = Object.keys(gates);
   var pinNumCounter = new Array(keys.length).fill(0);
   var arr = [];
@@ -285,11 +285,12 @@ Fsm2schematic.fsm2outputTruthTable = function(fsm) {
 };
 
 /**
- * Remove redundant gates: 
+ * Remove empty gates: 
  * 1. no output gates
- * 2. redundant pins in gates
+ * 2. useless pins in gates
  */
-Fsm2schematic.removeRedundantGates = function(gates) {
+Fsm2schematic.removeEmptyGates = function() {
+  var gates = Fsm2schematic.gates;
   var beforeGateNumbers = -1;
   var afterGateNumbers = -2;
   while (afterGateNumbers != beforeGateNumbers) {
@@ -329,3 +330,33 @@ Fsm2schematic.removeUselessPin = function(gates, outpins) {
       if (! (outpins[i][j].name in gates))
         outpins[i] = outpins[i].splice(gateNames.indexOf(outpins[i][j]), 1);
 };
+
+// remove OR, AND gate with single input
+Fsm2schematic.removeRedundantGates = function() {
+  var gates = Fsm2schematic.gates;
+  for (let name in gates) {
+    var gateType = name.split(" ")[0];
+    if (gates[name].inputNum == 1 && (gateType == "and" || gateType == "or") ) {
+      Fsm2schematic.removeRedundantGate(name);
+      delete gates[name];
+    }
+  }
+};
+
+Fsm2schematic.removeRedundantGate = function(gateName) {
+  var gates = Fsm2schematic.gates;
+  var originalOuts = gates[gateName].out[0];
+
+  for (let name in gates) {
+    var outputs = gates[name].out;
+    for (let output of outputs) {
+      for (let each in output) {
+        if (output[each].name == gateName) {
+          output.splice(output.indexOf(each), 1);
+          output = output.concat(originalOuts);
+        }
+      }
+    }
+  }
+};
+
