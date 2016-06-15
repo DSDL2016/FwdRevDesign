@@ -139,6 +139,6 @@ GUI.view._toFSM = function(){
     }
     let fsm = Algorithm.reverse(schematic);
     GUI.fsm.graph.clear();
-    GUI.fsm.drawFSM(fsm);
     GUI.view.toggleView();
+    GUI.fsm.drawFSM(fsm);
 };
