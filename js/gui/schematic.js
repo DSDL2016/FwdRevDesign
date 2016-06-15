@@ -112,7 +112,7 @@ GUI.schematic.getSchematic = function(){
     }
     for(let cell of raw.cells){
         if(cell.type == 'gate.Link'){
-            if( cell.source.port.contains('i') ){
+            if( cell.source.port.includes('i') ){
                 let tmp = cell.source;
                 cell.source = cell.target;
                 cell.target = tmp;
