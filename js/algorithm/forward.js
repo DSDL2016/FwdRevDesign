@@ -37,13 +37,13 @@ Fsm2schematic.convert = function(fsm, ffType) {
   Fsm2schematic.addOutputTruthTable(outputTruthTable);
 
   Fsm2schematic.customizeFF(ffType);
-  console.log("schematic: " + JSON.stringify(Fsm2schematic.gates));
 
   Fsm2schematic.concatGates();
 
   Fsm2schematic.removeEmptyGates();
   Fsm2schematic.removeRedundantGates();
 
+  console.log("schematic: " + JSON.stringify(Fsm2schematic.gates));
   // For debugging, you can return Fsm2schematic.gates
   //return Fsm2schematic.gates;
   return Fsm2schematic.getProcessedGates();
@@ -71,7 +71,7 @@ Fsm2schematic.addGate = function(gate, output, index = 0) {
   Fsm2schematic.addGate(output);
 
   if (index > 1)
-    console.log("Error: Number of output ports > 2 is not supported");
+    throw Error("Number of output ports > 2 is not supported");
 
   // check if its second output port exists
   if (typeof Fsm2schematic.gates[gate].out[index] == "undefined")
@@ -89,9 +89,18 @@ Fsm2schematic.init = function(bitLength) {
 
 Fsm2schematic.renameGate = function(oldName, newName) {
   if (! (oldName in Fsm2schematic.gates))
-    console.log("Error: rename gate : oldName " + oldName + " not found");
+    throw Error("rename gate : oldName " + oldName + " not found");
   Fsm2schematic.gates[newName] = Fsm2schematic.gates[oldName];
   delete Fsm2schematic.gates[oldName];
+
+    var gates = Fsm2schematic.gates;
+		for (let name in gates) {
+			var outs = gates[name].out;
+			for (let pins of outs)
+				for (let pin of pins)
+					if (pin.name == oldName)
+						pin.name = newName;
+		}
 }; 
 
 // add "101" into schematic
@@ -144,17 +153,16 @@ Fsm2schematic.concatGate = function(gateName) {
   var gates = Fsm2schematic.gates;
   var totalGate = gates[gateName].inputNum - 1;
 
-  if (totalGate == 0)
-    Fsm2schematic.addGate(gateName + "|0", gates[gateName].out[0][0].name);
-
   // create cates and concat 
-  for (let i = 0; i < totalGate; i++) {
-    if (i == totalGate - 1) // is the last one? connect to the original output  
-      // TODO: the FF may not be the first
-      Fsm2schematic.addGate(gateName + "|" + i, gates[gateName].out[0][0].name);
-    else
-      Fsm2schematic.addGate(gateName + "|" + i, gateName + "|" + (i + 1));
-  }
+  let i = 0;
+  for (i = 0; i < totalGate; i++)
+    Fsm2schematic.addGate(gateName + "|" + i, gateName + "|" + (i + 1));
+
+  // is the last one? connect to the original output  
+  for (let output of gates[gateName].out)
+    for (let pin of output)
+      Fsm2schematic.addGate(gateName + "|" + i, pin.name);
+
 
   // connect input pins
   var connectPinIndex = -1; // because the first gate has 2 available input pins
@@ -199,7 +207,7 @@ Fsm2schematic.customizeFF = function(ffType) {
       Fsm2schematic.addGate("not " + i, ffName + i);
       Fsm2schematic.addGate("or " + i, ffName + i);
     } else {
-      console.log("Unknown ffType " + ffType[i]);
+      throw Error("Unknown ffType " + ffType[i]);
     }
   }
 };
@@ -349,14 +357,19 @@ Fsm2schematic.removeRedundantGate = function(gateName) {
 
   for (let name in gates) {
     var outputs = gates[name].out;
-    for (let output of outputs) {
-      for (let each in output) {
-        if (output[each].name == gateName) {
-          output.splice(output.indexOf(each), 1);
-          for (originalOut of originalOuts)
-            output.push(originalOut);
-        }
+    for (let out in outputs) {
+      if (Fsm2schematic.containName(outputs[out], gateName)) {
+        outputs[out] = outputs[out].filter(function(x) { return x.name != gateName;});
+        outputs[out] = outputs[out].concat(originalOuts);
       }
     }
   }
+};
+
+Fsm2schematic.containName = function(arr, name) {
+  for (let each of arr) 
+    if (each.name == name)
+      return true;
+
+  return false
 };
