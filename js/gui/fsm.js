@@ -83,8 +83,11 @@ GUI.fsm._initPaper = function(paperView){
 };
 
 
-GUI.fsm.newState = function(x, y){
+GUI.fsm.newState = function(x, y, name){
     var cell = new joint.shapes.fsm.State({
+        attrs: {
+            text: { text: name }
+        },
         position: { x: x, y: y }
     });
     this.graph.addCell(cell);
@@ -191,7 +194,7 @@ GUI.fsm.drawFSM = function(fsm, centerX, centerY, radius, startAngle){
     for(let state in fsm){
         let x = centerX + radius * Math.cos(theta);
         let y = centerY + radius * Math.sin(theta);
-        let id = GUI.fsm.newState(x, y);
+        let id = GUI.fsm.newState(x, y, state);
         idMapping[state] = id;
         xytheta[id] = {theta: theta, x: x, y: y};
         theta += dTheta;
