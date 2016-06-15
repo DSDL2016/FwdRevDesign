@@ -150,7 +150,7 @@ schematic2Fsm.rev = function(schematic){
 			schematic2Fsm.evaluate(schematic, order, Gate);
 			transMap.push({
 				next: schematic2Fsm.getValues(nextStates, schematic),
-				output: schematic2Fsm.getValues(outputs, schematic)
+				out: schematic2Fsm.getValues(outputs, schematic)
 			});
 		}
 		fsm[stateString] = transMap;
