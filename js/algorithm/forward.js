@@ -201,7 +201,7 @@ Fsm2schematic.customizeFF = function(ffType) {
       Fsm2schematic.addGate("xor " + i, "t " + i);
     }
     else if (ffType[i] == "j" || ffType[i] == "s") {
-      var ffName = ffType[i] == "j" ? "jk ": "sr ";
+      var ffName = ffType[i] == "j" ? "jk ": "rs ";
       Fsm2schematic.renameGate("dff " + i, ffName + i);
       Fsm2schematic.addGate("or " + i, "not " + i);
       Fsm2schematic.addGate("not " + i, ffName + i);
