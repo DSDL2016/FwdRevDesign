@@ -43,7 +43,6 @@ Fsm2schematic.convert = function(fsm, ffType) {
   Fsm2schematic.removeEmptyGates();
   Fsm2schematic.removeRedundantGates();
 
-  console.log("schematic: " + JSON.stringify(Fsm2schematic.gates));
   // For debugging, you can return Fsm2schematic.gates
   //return Fsm2schematic.gates;
   return Fsm2schematic.getProcessedGates();
