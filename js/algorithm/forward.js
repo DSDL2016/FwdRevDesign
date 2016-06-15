@@ -353,10 +353,10 @@ Fsm2schematic.removeRedundantGate = function(gateName) {
       for (let each in output) {
         if (output[each].name == gateName) {
           output.splice(output.indexOf(each), 1);
-          output = output.concat(originalOuts);
+          for (originalOut of originalOuts)
+            output.push(originalOut);
         }
       }
     }
   }
 };
-
