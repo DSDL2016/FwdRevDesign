@@ -13,7 +13,7 @@ schematic2Fsm.topoSort = function(index, schematic, used, order){
 		for(var j = 0; j < outs.length; j++){
 			var nextIdx = outs[j].id;
 			if(!used[nextIdx]){
-				topoSort(nextIdx, schematic, used, order);
+				schematic2Fsm.topoSort(nextIdx, schematic, used, order);
 			}
 		}
 	}
@@ -67,7 +67,7 @@ schematic2Fsm.binString = function(value, digit){
 	return result;
 }
 schematic2Fsm.setValues = function(values, gates, schematic){
-	var valueArr = bin(values, gates.length);
+	var valueArr = schematic2Fsm.bin(values, gates.length);
 	for(var i = 0; i < gates.length; i++){
 		schematic[gates[i]].inputValue[0] = valueArr[i];
 	}
@@ -133,7 +133,7 @@ schematic2Fsm.rev = function(schematic){
 	var order = [];
 	var used = Array(schematic.length).fill(false);
 	for(var i = 0; i < schematic.length; i++){
-		if(!used[i]) topoSort(i, schematic, used, order);
+		if(!used[i]) schematic2Fsm.topoSort(i, schematic, used, order);
 	}
 	order.reverse();
 	
@@ -142,15 +142,15 @@ schematic2Fsm.rev = function(schematic){
 	var nState = Math.pow(2, states.length);
 	var nTrans = Math.pow(2, inputs.length);
 	for(var state = 0; state < nState; state++){
-		setValues(state, states, schematic);
-		var stateString = binString(state, states.length);
+		schematic2Fsm.setValues(state, states, schematic);
+		var stateString = schematic2Fsm.binString(state, states.length);
 		var transMap = [];
 		for(var trans = 0; trans < nTrans; trans++){
-			setValues(trans, inputs, schematic);
-			evaluate(schematic, order, Gate);
+			schematic2Fsm.setValues(trans, inputs, schematic);
+			schematic2Fsm.evaluate(schematic, order, Gate);
 			transMap.push({
-				next: getValues(nextStates, schematic),
-				output: getValues(outputs, schematic)
+				next: schematic2Fsm.getValues(nextStates, schematic),
+				output: schematic2Fsm.getValues(outputs, schematic)
 			});
 		}
 		fsm[stateString] = transMap;
