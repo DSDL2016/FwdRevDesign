@@ -37,13 +37,13 @@ Fsm2schematic.convert = function(fsm, ffType) {
   Fsm2schematic.addOutputTruthTable(outputTruthTable);
 
   Fsm2schematic.customizeFF(ffType);
-  console.log("schematic: " + JSON.stringify(Fsm2schematic.gates));
 
   Fsm2schematic.concatGates();
 
   Fsm2schematic.removeEmptyGates();
   Fsm2schematic.removeRedundantGates();
 
+  console.log("schematic: " + JSON.stringify(Fsm2schematic.gates));
   // For debugging, you can return Fsm2schematic.gates
   //return Fsm2schematic.gates;
   return Fsm2schematic.getProcessedGates();
@@ -71,7 +71,7 @@ Fsm2schematic.addGate = function(gate, output, index = 0) {
   Fsm2schematic.addGate(output);
 
   if (index > 1)
-    console.log("Error: Number of output ports > 2 is not supported");
+    throw Error("Number of output ports > 2 is not supported");
 
   // check if its second output port exists
   if (typeof Fsm2schematic.gates[gate].out[index] == "undefined")
@@ -89,7 +89,7 @@ Fsm2schematic.init = function(bitLength) {
 
 Fsm2schematic.renameGate = function(oldName, newName) {
   if (! (oldName in Fsm2schematic.gates))
-    console.log("Error: rename gate : oldName " + oldName + " not found");
+    throw Error("rename gate : oldName " + oldName + " not found");
   Fsm2schematic.gates[newName] = Fsm2schematic.gates[oldName];
   delete Fsm2schematic.gates[oldName];
 
@@ -207,7 +207,7 @@ Fsm2schematic.customizeFF = function(ffType) {
       Fsm2schematic.addGate("not " + i, ffName + i);
       Fsm2schematic.addGate("or " + i, ffName + i);
     } else {
-      console.log("Unknown ffType " + ffType[i]);
+      throw Error("Unknown ffType " + ffType[i]);
     }
   }
 };
@@ -358,7 +358,6 @@ Fsm2schematic.removeRedundantGate = function(gateName) {
   for (let name in gates) {
     var outputs = gates[name].out;
     for (let out in outputs) {
-      // TODO: This should update {inputNum} of gates
       if (Fsm2schematic.containName(outputs[out], gateName)) {
         outputs[out] = outputs[out].filter(function(x) { return x.name != gateName;});
         outputs[out] = outputs[out].concat(originalOuts);
