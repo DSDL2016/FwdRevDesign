@@ -1,0 +1,49 @@
+{
+  "name": "jointjs",
+  "description": "JavaScript diagramming library",
+  "main": [
+    "dist/joint.js",
+    "dist/joint.css"
+  ],
+  "moduleType": [
+    "globals",
+    "amd",
+    "node"
+  ],
+  "license": "MPL-2.0",
+  "authors": [
+    {
+      "name": "David Durman",
+      "email": "daviddurman@gmail.com"
+    },
+    {
+      "name": "Roman Bruckner",
+      "email": "bruckner.roman@gmail.com"
+    },
+    {
+      "name": "Emanuele Palombo",
+      "email": "emanuele@client.io"
+    },
+    {
+      "name": "Charles Hill",
+      "email": "chill@degreesofzero.com"
+    }
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "blanket": "1.1.7",
+    "qunit": "1.21.0",
+    "requirejs": "2.1.22"
+  },
+  "homepage": "https://github.com/clientIO/joint",
+  "version": "0.9.9",
+  "_release": "0.9.9",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.9.9",
+    "commit": "f3257ba17d12d2fa6b0f75bf8a936dbd86f803ec"
+  },
+  "_source": "https://github.com/clientIO/joint.git",
+  "_target": "^0.9.7",
+  "_originalSource": "jointjs"
+}
