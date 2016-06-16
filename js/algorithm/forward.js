@@ -332,10 +332,14 @@ Fsm2schematic.removeUselessOutput = function(gates) {
 
 Fsm2schematic.removeUselessPin = function(gates, outpins) {
   var gateNames = Object.keys(gates);
-  for (let i = 0; i < outpins.length; i++)
-    for (let j = 0; j < outpins[i].length; j++)
+  for (let i = 0; i < outpins.length; i++){
+    for (let j = 0; j < outpins[i].length; j++) {
       if (! (outpins[i][j].name in gates))
-        outpins[i] = outpins[i].splice(gateNames.indexOf(outpins[i][j]), 1);
+        outpins[i][j].name = "DELETE";
+        // outpins[i] = outpins[i].splice(gateNames.indexOf(outpins[i][j]), 1);
+    }
+    outpins[i] = outpins[i].filter(function(x) { return x.name != "DELETE";});
+  }
 };
 
 // remove OR, AND gate with single input
