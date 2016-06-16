@@ -51,13 +51,14 @@ schematic2Fsm.bin = function(value, digit){
 		i++;
 		value = Math.floor(value / 2);
 	}
+	result = result.reverse();
 	return result;
 }
 schematic2Fsm.binString = function(value, digit){
 	var result = '';
 	var i = 0;
 	while(value > 0){
-		result += String(value % 2);
+		result = String(value % 2)+result;
 		i++;
 		value = Math.floor(value / 2);
 	}
@@ -79,11 +80,12 @@ schematic2Fsm.getValues = function(gates, schematic){
 	}
 	return result;
 }
-schematic2Fsm.rev = function(schematic){
+schematic2Fsm.rev = function(schematic_in){
 	var inputs = [];
 	var outputs = [];
 	var states = [];
 	var nextStates = [];
+	var schematic = jQuery.extend(true, [], schematic_in);
 	
     var size = schematic.length;
 	for(var i = 0; i < size; i++){
