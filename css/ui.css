@@ -26,6 +26,10 @@ body {
     color: white;
 }
 
+.header a {
+    color: white;
+    text-decoration: none;
+}
 
 .title {
     font-size: 30px;
